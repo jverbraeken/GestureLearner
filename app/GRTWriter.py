@@ -10,6 +10,26 @@ class GRTWriter:
         self.name = name
         self.info_text = info_text
 
+    def add_class(self, name):
+        """
+
+        Args:
+            name ():
+
+        Returns:
+
+        """
+
+    def add_sample(self, tuple_list):
+        """
+
+        Args:
+            tuple_list ():
+
+        Returns:
+
+        """
+
     def write_to_file(self, filepath):
         """
         Writes the contents of the GRTWriter to the file specified
