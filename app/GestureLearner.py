@@ -1,36 +1,15 @@
-from tkinter import *
+from tkinter import Tk
 
-from app.GRTWriter import GRTWriter
-
-STRING_NEW_SAMPLE = "New Sample"
-STRING_SAVE = "Save"
+from app.system.ServiceLocator_Checked import ServiceLocator_Checked
 
 
-class GestureLearner(Frame):
-    def __init__(self, parent):
-        Frame.__init__(self, parent)
-        self.parent = parent
-        self.initUI()
+def main():
+    root = Tk()
+    service_locator = ServiceLocator_Checked()
+    service_locator.ui(root)
+    root.geometry("300x250+300+300")
+    root.mainloop()
 
-    def initUI(self):
-        """
-        Initialize the UI
-        """
-        self.parent.title("Gesture Learner")
 
-        self.pack(fill=BOTH, expand=1)
-
-        button_new_sample = Button(self, text=STRING_NEW_SAMPLE, command=self.create_new_sample)
-        button_new_sample.pack()
-        button_save = Button(self, text=STRING_SAVE, command=self.save)
-        button_save.pack()
-
-    def create_new_sample(self):
-        """
-        Create a new gesture sample
-        """
-        print("clicked!")
-
-    def save(self):
-        writer = GRTWriter("foo", "bar")
-        writer.write_to_file("E:/Desktop/foo.grt")
+if __name__ == '__main__':
+    main()

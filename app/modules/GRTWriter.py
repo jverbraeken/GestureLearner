@@ -1,4 +1,16 @@
+def register(service_locator):
+    GRTWriter.service_locator = service_locator
+    service_locator.grt_writer = create
+
+def create():
+    return GRTWriter
+
+
 class GRTWriter:
+    classes = []
+    current_class = 0
+    service_locator = None
+
     def __init__(self, name, info_text):
         """
         Initialize a class that can write the data needed for the gesture recognition to a *.grt file
@@ -7,8 +19,7 @@ class GRTWriter:
             name (str): The name of the dataset
             info_text (str): A description of the dataset
         """
-        self.name = name
-        self.info_text = info_text
+        self.name, self.info_text = name, info_text
 
     def add_class(self, name):
         """
@@ -19,6 +30,8 @@ class GRTWriter:
         Returns:
 
         """
+        self.classes.append([])
+        self.current_class += 1
 
     def add_sample(self, tuple_list):
         """
@@ -29,6 +42,7 @@ class GRTWriter:
         Returns:
 
         """
+        self.classes[len(self.classes) - 1].append(tuple_list)
 
     def write_to_file(self, filepath):
         """
