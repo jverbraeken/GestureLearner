@@ -1,16 +1,12 @@
 def register(service_locator):
     GRTWriter.service_locator = service_locator
-    service_locator.grt_writer = create
-
-
-def create():
-    return GRTWriter
+    service_locator.grt_writer = GRTWriter
 
 
 class GRTWriter:
-    classes = []
-    current_class = 0
+    classes = {}
     service_locator = None
+    name, info_text = "", ""
 
     def __init__(self, name, info_text):
         """
@@ -28,29 +24,28 @@ class GRTWriter:
         Args:
             name (str): The name of the gesture
         """
-        self.classes.append([])
-        self.current_class += 1
+        self.classes[name] = []
 
-    def add_sample(self, tuple_list):
+    def add_sample(self, class_name, tuple_list):
         """
-        Add a new series of rotation/acceleration data tuples that correspond to the execution of the last
+        Add a new series of rotation/acceleration data tuples that correspond to the execution of the gesture
+        classified by class_name
+
         Args:
-            tuple_list ():
-
-        Returns:
-
+            class_name (str): The name of the class to which the sample belongs
+            tuple_list (list): A list of tuples of which the first 3 elements correspond to the X, Y and Z rotation and
+            the last 3 elements correspond to the X, Y and Z acceleration
         """
-        self.classes[len(self.classes) - 1].append(tuple_list)
+        self.classes[class_name].append(tuple_list)
 
-    def write_to_file(self, filepath):
+    def write_to_file(self, file_path):
         """
         Writes the contents of the GRTWriter to the file specified
 
         Args:
-            filepath (str): The full path to the file to which the contents should be written
-
+            file_path (str): The full path to the file to which the contents should be written
         """
-        file = open(filepath, "w")
+        file = open(file_path, "w")
         file.write("GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0\n")
         file.write("DatasetName: " + self.name + "\n")
         file.write("InfoText: " + self.info_text + "\n")

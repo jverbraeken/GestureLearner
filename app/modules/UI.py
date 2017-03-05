@@ -6,22 +6,20 @@ STRING_NEW_SAMPLE = "New Sample"
 STRING_SAVE = "Save"
 
 
-def register(service_locator):
-    GRTWriter.service_locator = service_locator
-    service_locator.ui = create
-
-def create(parent):
-    return UI(parent)
+def register(service_locator, parent):
+    UI.service_locator = service_locator
+    service_locator.ui = UI(parent)
 
 
 class UI(Frame):
-    writer = GRTWriter("foo", "bar")
     service_locator = None
+    writer = None
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
         self.parent = parent
         self.init()
+        self.writer = self.service_locator.grt_writer
 
     def init(self):
         """
@@ -40,8 +38,8 @@ class UI(Frame):
         """
         Create a new gesture sample
         """
-        self.writer.add_class("foo")
-        self.writer.add_sample([(1, 2), (3, 4)])
+        self.writer.add_class(self.writer, "foo")
+        self.writer.add_sample(self.writer, "foo", [(1, 2), (3, 4)])
 
     def save(self):
-        self.writer.write_to_file("E:/Desktop/foo.grt")
+        self.writer.write_to_file(self.writer, "E:/Desktop/foo.grt")

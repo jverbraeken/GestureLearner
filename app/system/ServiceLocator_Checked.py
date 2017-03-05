@@ -3,9 +3,12 @@ from app.system.ServiceLocator import ServiceLocator
 
 
 class ServiceLocator_Checked(ServiceLocator):
-    def __init__(self):
-        ServiceLocator.__init__(self)
+    grt_writer = None
+    ui = None
 
-    def init(self):
-        ServiceLocator.init(self)
+    def __init__(self, parent):
+        ServiceLocator.__init__(self, parent)
+
+    def init(self, parent):
+        ServiceLocator.init(self, parent)
         GRTWriter_Checked.register(self)

@@ -2,11 +2,12 @@ from app.modules import UI, GRTWriter
 
 
 class ServiceLocator:
-    def __init__(self):
-        self.ui = None
-        self.grt_writer = None
-        self.init()
+    grt_writer = None
+    ui = None
 
-    def init(self):
-        UI.register(self)
+    def __init__(self, parent):
+        self.init(parent)
+
+    def init(self, parent):
         GRTWriter.register(self)
+        UI.register(self, parent)

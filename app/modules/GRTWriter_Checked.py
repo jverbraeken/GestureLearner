@@ -3,11 +3,7 @@ from app.modules.GRTWriter import GRTWriter
 
 def register(service_locator):
     GRTWriter_Checked.service_locator = service_locator
-    service_locator.grt_writer = create
-
-
-def create():
-    return GRTWriter_Checked
+    service_locator.grt_writer = GRTWriter_Checked
 
 
 class GRTWriter_Checked(GRTWriter):
@@ -18,7 +14,7 @@ class GRTWriter_Checked(GRTWriter):
     def add_class(self, name):
         super().add_class(name)
 
-    def add_sample(self, tuple_list):
+    def add_sample(self, class_name, tuple_list):
         if len(self.classes) == 0:
             raise RuntimeError("You must add at least one class to add sample to")
         if len(tuple_list) == 0:
@@ -28,7 +24,7 @@ class GRTWriter_Checked(GRTWriter):
                 raise RuntimeError(
                     "You should provide a rotation and acceleration (so 6 elements) in each tuple for each sample")
 
-        super().add_sample(tuple_list)
+        super().add_sample(class_name, tuple_list)
 
     def write_to_file(self, file_path):
         super().write_to_file(file_path)
