@@ -2,6 +2,7 @@ def register(service_locator):
     GRTWriter.service_locator = service_locator
     service_locator.grt_writer = create
 
+
 def create():
     return GRTWriter
 
@@ -23,19 +24,16 @@ class GRTWriter:
 
     def add_class(self, name):
         """
-
+        Add a new kind of gesture that the player can execute.
         Args:
-            name ():
-
-        Returns:
-
+            name (str): The name of the gesture
         """
         self.classes.append([])
         self.current_class += 1
 
     def add_sample(self, tuple_list):
         """
-
+        Add a new series of rotation/acceleration data tuples that correspond to the execution of the last
         Args:
             tuple_list ():
 
