@@ -38,8 +38,8 @@ class UI(Frame):
         """
         Create a new gesture sample
         """
-        self.writer.add_class(self.writer, "foo")
-        self.writer.add_sample(self.writer, "foo", [(1, 2), (3, 4)])
+        self.writer.add_class("foo")
+        self.writer.add_sample("foo", [(1, 2, 3, 4, 5, 6), (7, 8, 9, 10, 11, 12)])
 
     def save(self):
-        self.writer.write_to_file(self.writer, "E:/Desktop/foo.grt")
+        self.writer.write_to_file("E:/Desktop/foo.grt")

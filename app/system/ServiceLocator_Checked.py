@@ -9,6 +9,5 @@ class ServiceLocator_Checked(ServiceLocator):
     def __init__(self, parent):
         ServiceLocator.__init__(self, parent)
 
-    def init(self, parent):
-        ServiceLocator.init(self, parent)
+    def register_grt_writer(self):
         GRTWriter_Checked.register(self)

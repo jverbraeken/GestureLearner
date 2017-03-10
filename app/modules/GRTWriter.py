@@ -1,22 +1,23 @@
+import collections
+
+
 def register(service_locator):
     GRTWriter.service_locator = service_locator
-    service_locator.grt_writer = GRTWriter
+    service_locator.grt_writer = GRTWriter("Placeholder")
 
 
 class GRTWriter:
-    classes = {}
+    classes = collections.OrderedDict()
     service_locator = None
-    name, info_text = "", ""
 
-    def __init__(self, name, info_text):
+    def __init__(self, name):
         """
         Initialize a class that can write the data needed for the gesture recognition to a *.grt file
 
         Args:
             name (str): The name of the dataset
-            info_text (str): A description of the dataset
         """
-        self.name, self.info_text = name, info_text
+        self.name = name
 
     def add_class(self, name):
         """
@@ -45,9 +46,37 @@ class GRTWriter:
         Args:
             file_path (str): The full path to the file to which the contents should be written
         """
+
+        def write_header():
+            def get_total_num_training_examples():
+                count = 0
+                for tuple_list in self.classes:
+                    count += len(self.classes[tuple_list])
+                return count
+
+            file.write("GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0\n")
+            file.write("DatasetName: " + self.name + "\n")
+            file.write("InfoText: " + " ".join(self.classes.keys()) + "\n")
+            file.write("NumDimensions: 6" + "\n")
+            file.write("TotalNumTrainingExamples: " + str(get_total_num_training_examples()) + "\n")
+            file.write("NumberOfClasses: " + str(len(self.classes)) + "\n")
+            file.write("ClassIDsAndCounters:\n")
+            for i, val in enumerate(self.classes):
+                file.write(str(i + 1) + "\t" + str(len(self.classes[val])) + "\n")
+            file.write("UseExternalRanges: 0\n")
+            file.write("LabelledTimeSeriesTrainingData:\n")
+
+        def write_body():
+            for i, gesture in enumerate(self.classes):
+                for sample in self.classes[gesture]:
+                    file.write("************TIME_SERIES************\n")
+                    file.write("ClassID: " + str(i + 1) + "\n")
+                    file.write("TimeSeriesLength: " + str(len(sample)) + "\n")
+                    file.write("TimeSeriesData:\n")
+                    for tuple in sample:
+                        file.write(str(tuple)[1:-1].replace(",", "") + "\n")
+
         file = open(file_path, "w")
-        file.write("GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0\n")
-        file.write("DatasetName: " + self.name + "\n")
-        file.write("InfoText: " + self.info_text + "\n")
-        file.write("NumDimensions: 6" + "\n")
+        write_header()
+        write_body()
         file.close()

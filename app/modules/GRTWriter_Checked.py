@@ -3,13 +3,13 @@ from app.modules.GRTWriter import GRTWriter
 
 def register(service_locator):
     GRTWriter_Checked.service_locator = service_locator
-    service_locator.grt_writer = GRTWriter_Checked
+    service_locator.grt_writer = GRTWriter_Checked("Placeholder Checked")
 
 
 class GRTWriter_Checked(GRTWriter):
-    def __init__(self, name, info_text):
-        super().__init__(name, info_text)
-        self.name, self.info_text = name, info_text
+    def __init__(self, name):
+        super(GRTWriter_Checked, self).__init__(name)
+        self.name = name
 
     def add_class(self, name):
         super().add_class(name)
