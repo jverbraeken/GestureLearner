@@ -35,15 +35,14 @@ class FrameMain(Frame):
         """
         Create a new gesture
         """
-        self.writer.add_class("foo")
-        self.ui_bridge.add_gesture()
+        self.writer.add_class(self.ui_bridge.add_gesture())
+
 
     def create_new_sample(self):
         """
         Create a new gesture sample
         """
-        self.writer.add_sample("foo", [(1, 2, 3, 4, 5, 6), (7, 8, 9, 10, 11, 12)])
-        self.ui_bridge.add_sample()
+        self.writer.add_sample(self.ui_bridge.add_sample(), [(1, 2, 3, 4, 5, 6), (7, 8, 9, 10, 11, 12)])
 
 
     def save(self):

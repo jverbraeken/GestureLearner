@@ -37,6 +37,7 @@ class UIBridge:
         if self.entry.get()!='':
             self.tree.insert('', 'end', uuid.uuid4(), text=self.entry.get())
             self.entry.delete(0, 'end')
+            return self.entry.get()
 
     def add_sample(self):
         if self.entry.get()!='':
@@ -44,6 +45,7 @@ class UIBridge:
             if item!='':
                 child = self.tree.insert(item, 'end', text=self.entry.get())
                 self.entry.delete(0, 'end')
+                return self.entry.get()
 
 
     def set_window_size(self, frame, width, height, x=300, y=300):
