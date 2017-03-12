@@ -2,6 +2,7 @@
 from app.modules import UIBridge, GRTWriter
 from app.modules.logging import Loggers
 from app.modules.logging import LoggingFactory
+from app.modules.networking import UDPScanner
 
 
 class ServiceLocator:
@@ -18,6 +19,7 @@ class ServiceLocator:
         self.register_loggers()
         self.register_grt_writer()
         self.register_ui_bridge()
+        self.register_udp_scanner()
 
     def register_logging_factories(self):
         LoggingFactory.register(self)
@@ -30,3 +32,6 @@ class ServiceLocator:
 
     def register_loggers(self):
         Loggers.register(self, True)
+
+    def register_udp_scanner(self):
+        UDPScanner.register(self)
