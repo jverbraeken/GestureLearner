@@ -3,7 +3,7 @@ import logging
 import os
 
 from app.modules.logging import Loggers
-from app.modules.logging.Loggertje import Loggertje
+from app.modules.logging.Logger import Loggertje
 from app.system import Constants
 
 
