@@ -1,5 +1,4 @@
 # coding=utf-8
-import logging
 import os
 
 from app.modules.logging import Loggers
@@ -16,7 +15,7 @@ class LoggingFactory:
 
     def __init__(self):
         if Constants.CLEAN_LOGS_ON_RESTART:
-            for log in ["system", "udp_scanner", "ui", "grt_writer", "undefined"]:
+            for log in ["system", "udp_scanner", "ui", "grt_writer", "byte_stream_interpreter", "undefined"]:
                 try:
                     os.remove(Constants.LOG_FILE + " - " + log + ".log")
                 except OSError:
