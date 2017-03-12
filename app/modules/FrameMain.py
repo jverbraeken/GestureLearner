@@ -13,17 +13,18 @@ class FrameMain(Frame):
     background = "white"
 
     def __init__(self, parent, service_locator):
-        Frame.__init__(self, parent, background=self.background)
-        self.parent = parent
-        parent.title(Constants.APPLICATION_NAME)
-        self.pack(fill=BOTH, expand=1)
-        parent.geometry(str(640) + "x" + str(480) + "+" + str(300) + "+" + str(300))
+        Frame.__init__(self, parent)
 
         self.service_locator = service_locator
         self.writer = self.service_locator.grt_writer
 
-        self.service_locator.ui_bridge.add_button(STRING_NEW_SAMPLE, self.create_new_sample)
-        self.service_locator.ui_bridge.add_button(STRING_SAVE, self.save)
+        self.parent = parent
+        self.parent.title(Constants.APPLICATION_NAME)
+        self.pack(fill=BOTH, expand=1)
+        self.service_locator.ui_bridge.set_window_size(parent, Constants.WIDTH, Constants.HEIGHT)
+
+        self.service_locator.ui_bridge.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
+        self.service_locator.ui_bridge.add_button(parent, STRING_SAVE, self.save)
 
     def create_new_sample(self):
         """
