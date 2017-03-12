@@ -1,19 +1,20 @@
-from app.modules import UI, GRTWriter
+# coding=utf-8
+from app.modules import UIBridge, GRTWriter
 
 
 class ServiceLocator:
     grt_writer = None
-    ui = None
+    ui_bridge = None
 
-    def __init__(self, parent):
-        self.init(parent)
+    def __init__(self):
+        self.init()
 
-    def init(self, parent):
+    def init(self):
         self.register_grt_writer()
-        self.register_ui(parent)
+        self.register_ui_bridge()
 
     def register_grt_writer(self):
         GRTWriter.register(self)
 
-    def register_ui(self, parent):
-        UI.register(self, parent)
+    def register_ui_bridge(self):
+        UIBridge.register(self)

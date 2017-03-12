@@ -1,3 +1,4 @@
+# coding=utf-8
 from app.modules.GRTWriter import GRTWriter
 
 
