@@ -17,3 +17,6 @@ class UIBridge:
         button = Button(frame, text=text_in, comman=command_in)
         button.pack()
         return button
+
+    def set_window_size(self, frame, width, height, x=300, y=300):
+        frame.geometry(str(width) + "x" + str(height) + "+" + str(x) + "+" + str(y))
