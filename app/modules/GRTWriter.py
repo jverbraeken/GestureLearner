@@ -40,6 +40,18 @@ class GRTWriter:
         """
         self.classes[class_name].append(tuple_list)
 
+    def rename(self, class1, class2):
+        """
+        Add a new series of rotation/acceleration data tuples that correspond to the execution of the gesture
+        classified by class_name
+
+        Args:
+            class_name (str): The name of the class to which the sample belongs
+            tuple_list (list): A list of tuples of which the first 3 elements correspond to the X, Y and Z rotation and
+            the last 3 elements correspond to the X, Y and Z acceleration
+        """
+        self.classes[class_name].append(tuple_list)
+
     def write_to_file(self, file_path):
         """
         Writes the contents of the GRTWriter to the file specified
