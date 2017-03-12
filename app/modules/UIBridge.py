@@ -7,7 +7,7 @@ def register(service_locator):
     service_locator.ui_bridge = UIBridge()
 
 
-class UIBridge(Frame):
+class UIBridge:
     service_locator = None
 
     def create_window(self):
