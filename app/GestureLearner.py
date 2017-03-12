@@ -1,13 +1,17 @@
-from tkinter import Tk
+# coding=utf-8
 
+from app.modules.UI import UI
 from app.system.ServiceLocator_Checked import ServiceLocator_Checked
+
+service_locator = ServiceLocator_Checked()
 
 
 def main():
-    root = Tk()
-    service_locator = ServiceLocator_Checked(root)
-    root.geometry("300x250+300+300")
-    root.mainloop()
+    """
+    The starting point of the program
+    """
+    ui = UI()
+    ui.init(service_locator)
 
 
 if __name__ == '__main__':
