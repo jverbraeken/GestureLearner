@@ -1,7 +1,7 @@
 # coding=utf-8
 import logging
 
-from app.modules.logging import LoggingLevels
+from app.modules.logging import LoggerLevels
 from app.system import Constants
 
 
@@ -36,17 +36,17 @@ class Loggertje:
         self.logger.info("Use input response: " + message)
 
     def error(self, message):
-        if Constants.LOG_LEVEL >= LoggingLevels.error:
+        if Constants.LOG_LEVEL >= LoggerLevels.error:
             self.logger.error(message)
 
     def warning(self, message):
-        if Constants.LOG_LEVEL >= LoggingLevels.warning:
+        if Constants.LOG_LEVEL >= LoggerLevels.warning:
             self.logger.warning(message)
 
     def message(self, message):
-        if Constants.LOG_LEVEL >= LoggingLevels.message:
+        if Constants.LOG_LEVEL >= LoggerLevels.message:
             self.logger.info(message)
 
     def comment(self, message):
-        if Constants.LOG_LEVEL >= LoggingLevels.comment:
+        if Constants.LOG_LEVEL >= LoggerLevels.comment:
             self.logger.debug(message)

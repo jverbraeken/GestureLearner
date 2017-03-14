@@ -3,9 +3,6 @@ import tkinter
 
 from app.modules.FrameMain import FrameMain
 
-STRING_NEW_SAMPLE = "New Sample"
-STRING_SAVE = "Save"
-
 
 class UI:
     service_locator = None
