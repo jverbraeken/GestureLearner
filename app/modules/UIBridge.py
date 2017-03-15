@@ -26,7 +26,6 @@ class UIBridge:
         return filedialog.asksaveasfilename(parent=parent, defaultextension=default_extension,
                                             initialdir=initial_directory, title=title, filetypes=file_types)
 
-
     def show_open_dialog(self, parent, title, initial_directory, file_types, default_extension):
-        return filedialog.askopenasfilename(parent=parent, defaultextension=default_extension,
-                                            initialdir=initial_directory, title=title, filetypes=file_types)
+        return filedialog.askopenfilename(parent=parent, defaultextension=default_extension,
+                                          initialdir=initial_directory, title=title, filetypes=file_types)

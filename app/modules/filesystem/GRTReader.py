@@ -10,7 +10,7 @@ def register(service_locator):
 class GRTReader:
     service_locator = None
 
-    def read_grt(self, file_path):
+    def read_file(self, file_path):
         """
         Uses the data of the *.grt or *.grtraw to initialize a new data object that's used by the servicelocator
             automatically.
@@ -23,25 +23,25 @@ class GRTReader:
             def skip():
                 pass
 
+            class_ids_and_counters = []
+
             while True:
                 line = file.readline()
                 if not line:
                     break
 
-                class_ids_and_counters = []
-
                 if line.startswith("GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0\n"):
                     skip()
                 if line.startswith("DatasetName"):
-                    data.name = line[line.index(':') + 1:]
+                    data.name = line[line.index(':') + 2:-1]
                 if line.startswith("InfoText"):
-                    data.info = line[line.index(':') + 1:]
+                    data.info = line[line.index(':') + 2:-1]
                 if line.startswith("NumDimensions"):
                     skip()
                 if line.startswith("TotalNumTrainingExamples"):
                     skip()
                 if line.startswith("NumberOfClasses"):
-                    num_classes_expected = int(line[line.index(':') + 1:])
+                    num_classes_expected = int(line[line.index(':') + 2:-1])
                     for i in range(num_classes_expected):
                         data.add_gesture()
                 if line.startswith("ClassIDsAndCounters"):
@@ -62,17 +62,20 @@ class GRTReader:
                     for class_id in range(num_classes_expected):
                         for sample in range(class_ids_and_counters[class_id]):
                             file.readline() # **** TIME SERIES ****
+                            file.readline()  # ClassID: ...
                             line = file.readline()
                             if line.startswith("SampleName"):
-                                data.add_sample(line[line.index(':') + 1:])
+                                data.add_sample(line[line.index(':') + 2:-1])
+                                line = file.readline()
                             else:
                                 data.add_sample()
-                            time_series_length = int(line[line.index(':') + 1:])
+                            time_series_length = int(line[line.index(':') + 2:-1])
                             file.readline() # TimeSeriesData:
                             for rot in range(time_series_length):
+                                line = file.readline()
                                 nums = line.split("\t")
-                                data.add_rotation(int(nums[1]), int(nums[2]), int(nums[3]))
-                                data.add_acceleration(int(nums[4]), int(nums[5]), int(nums[6]))
+                                data.add_rotation(int(nums[0]), int(nums[1]), int(nums[2]))
+                                data.add_acceleration(int(nums[3]), int(nums[4]), int(nums[5]))
 
 
         file = open(file_path, "r")

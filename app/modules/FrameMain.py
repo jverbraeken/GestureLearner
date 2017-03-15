@@ -50,13 +50,6 @@ class FrameMain(Frame):
         self.writer.add_sample("foo", [(1, 2, 3, 4, 5, 6), (7, 8, 9, 10, 11, 12)])
 
     def save(self):
-        file_opt = options = {}
-        options['defaultextension'] = '.txt'
-        options['filetypes'] = [('all files', '.*'), ('text files', '.txt')]
-        options['initialdir'] = 'C:\\'
-        options['initialfile'] = 'myfile.txt'
-        options['parent'] = self.parent
-        options['title'] = 'This is a title'
         path = self.sL.ui_bridge.show_save_dialog(
             parent=self.parent,
             title=STRING_SAVE_DIALOG,
@@ -71,7 +64,8 @@ class FrameMain(Frame):
             parent=self.parent,
             title=STRING_OPEN_DIALOG,
             initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
-            file_types=[("Raw Gesture Recognition Toolkit files", ".grtraw")],
+            file_types=[("Raw Gesture Recognition Toolkit files", ".grtraw"),
+                        ("Gesture Recognition Toolkit files", ".grt")],
             default_extension=".grtraw")
         if path != "":
             self.reader.read_file(path)
