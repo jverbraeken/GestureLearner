@@ -9,6 +9,7 @@ STRING_OPEN = "Open"
 STRING_SAVE = "Save"
 STRING_START_RECORDING = "Start Recording"
 STRING_STOP_RECORDING = "Stop Recording"
+STRING_SAVE_DIALOG = "Choose where you want to save the GRT data"
 
 
 class FrameMain(Frame):
@@ -48,7 +49,21 @@ class FrameMain(Frame):
         self.writer.add_sample("foo", [(1, 2, 3, 4, 5, 6), (7, 8, 9, 10, 11, 12)])
 
     def save(self):
-        self.writer.write_to_file("C:/Users/Public/foo.grt")
+        file_opt = options = {}
+        options['defaultextension'] = '.txt'
+        options['filetypes'] = [('all files', '.*'), ('text files', '.txt')]
+        options['initialdir'] = 'C:\\'
+        options['initialfile'] = 'myfile.txt'
+        options['parent'] = self.parent
+        options['title'] = 'This is a title'
+        path = self.sL.ui_bridge.show_save_dialog(
+            parent=self.parent,
+            title=STRING_SAVE_DIALOG,
+            initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
+            file_types=[("Gesture Recognition Toolkit files", ".grt")],
+            default_extension=".grt")
+        if path != "":
+            self.writer.write_to_file(path)
 
     def open(self):
         self.reader.read_file()
