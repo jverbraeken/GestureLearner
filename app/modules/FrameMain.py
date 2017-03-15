@@ -5,6 +5,7 @@ from app.modules.logging import Loggers
 from app.system import Constants
 
 STRING_NEW_SAMPLE = "New Sample"
+STRING_OPEN = "Open"
 STRING_SAVE = "Save"
 STRING_START_RECORDING = "Start Recording"
 STRING_STOP_RECORDING = "Stop Recording"
@@ -23,6 +24,7 @@ class FrameMain(Frame):
 
         self.sL = service_locator
         self.writer = self.sL.grt_writer
+        self.reader = self.sL.grt_reader
 
         self.parent = parent
         self.parent.title(Constants.APPLICATION_NAME)
@@ -30,6 +32,7 @@ class FrameMain(Frame):
         self.sL.ui_bridge.set_window_size(parent, Constants.WIDTH, Constants.HEIGHT)
 
         self.sL.ui_bridge.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
+        self.sL.ui_bridge.add_button(parent, STRING_OPEN, self.open)
         self.sL.ui_bridge.add_button(parent, STRING_SAVE, self.save)
         self.sL.ui_bridge.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.sL.ui_bridge.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
@@ -46,6 +49,9 @@ class FrameMain(Frame):
 
     def save(self):
         self.writer.write_to_file("C:/Users/Public/foo.grt")
+
+    def open(self):
+        self.reader.read_file()
 
     def start_recording(self):
         data = self.sL.data

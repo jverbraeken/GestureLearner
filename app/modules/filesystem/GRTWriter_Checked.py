@@ -1,5 +1,5 @@
 # coding=utf-8
-from app.modules.GRTWriter import GRTWriter
+from app.modules.filesystem.GRTWriter import GRTWriter
 
 
 def register(service_locator):
