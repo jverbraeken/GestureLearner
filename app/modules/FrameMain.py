@@ -9,6 +9,7 @@ STRING_OPEN = "Open"
 STRING_SAVE = "Save"
 STRING_START_RECORDING = "Start Recording"
 STRING_STOP_RECORDING = "Stop Recording"
+STRING_OPEN_DIALOG = "Choose the grt or grtraw file you want to open"
 STRING_SAVE_DIALOG = "Choose where you want to save the GRT data"
 
 
@@ -66,7 +67,14 @@ class FrameMain(Frame):
             self.writer.write_to_file(path)
 
     def open(self):
-        self.reader.read_file()
+        path = self.sL.ui_bridge.show_open_dialog(
+            parent=self.parent,
+            title=STRING_OPEN_DIALOG,
+            initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
+            file_types=[("Raw Gesture Recognition Toolkit files", ".grtraw")],
+            default_extension=".grtraw")
+        if path != "":
+            self.reader.read_file(path)
 
     def start_recording(self):
         data = self.sL.data
