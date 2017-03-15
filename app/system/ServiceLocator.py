@@ -1,12 +1,14 @@
 # coding=utf-8
-from app.modules import Data
+from app.modules.data import Data
 from app.modules import SensorDataProcessor
-from app.modules import UIBridge, GRTWriter
+from app.modules import UIBridge
+from app.modules.filesystem import GRTWriter, GRTReader
 from app.modules.logging import Loggers, LoggerFactory
 from app.modules.networking import UDPScanner, ByteStreamInterpreter
 
 
 class ServiceLocator:
+    grt_reader = None
     grt_writer = None
     ui_bridge = None
     logger_factory = None
@@ -21,6 +23,7 @@ class ServiceLocator:
     def init(self):
         self.register_logging_factories()
         self.register_loggers()
+        self.register_grt_reader()
         self.register_grt_writer()
         self.register_ui_bridge()
         self.register_udp_scanner()
@@ -30,6 +33,9 @@ class ServiceLocator:
 
     def register_logging_factories(self):
         LoggerFactory.register(self)
+
+    def register_grt_reader(self):
+        GRTReader.register(self)
 
     def register_grt_writer(self):
         GRTWriter.register(self)

@@ -1,5 +1,5 @@
 # coding=utf-8
-from app.modules import GRTWriter_Checked
+from app.modules.filesystem import GRTWriter_Checked
 from app.modules.logging import Loggers
 from app.system.ServiceLocator import ServiceLocator
 
