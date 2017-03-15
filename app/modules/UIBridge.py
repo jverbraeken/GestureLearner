@@ -2,6 +2,7 @@
 import uuid
 from tkinter import *
 from tkinter import ttk
+from tkinter import filedialog
 
 
 def register(service_locator):
@@ -50,3 +51,11 @@ class UIBridge:
 
     def set_window_size(self, frame, width, height, x=300, y=300):
         frame.geometry(str(width) + "x" + str(height) + "+" + str(x) + "+" + str(y))
+
+    def show_save_dialog(self, parent, title, initial_directory, file_types, default_extension):
+        return filedialog.asksaveasfilename(parent=parent, defaultextension=default_extension,
+                                            initialdir=initial_directory, title=title, filetypes=file_types)
+
+    def show_open_dialog(self, parent, title, initial_directory, file_types, default_extension):
+        return filedialog.askopenfilename(parent=parent, defaultextension=default_extension,
+                                          initialdir=initial_directory, title=title, filetypes=file_types)
