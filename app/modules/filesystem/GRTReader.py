@@ -1,4 +1,6 @@
 # coding=utf-8
+import re
+
 from app.modules.data import Data
 
 
@@ -73,9 +75,10 @@ class GRTReader:
                             file.readline() # TimeSeriesData:
                             for rot in range(time_series_length):
                                 line = file.readline()
-                                nums = line.split("\t")
-                                data.add_rotation(int(nums[0]), int(nums[1]), int(nums[2]))
-                                data.add_acceleration(int(nums[3]), int(nums[4]), int(nums[5]))
+                                nums = re.split("\W+", line)
+                                data.add_time_state()
+                                data.add_rotation((int(nums[0]), int(nums[1]), int(nums[2])))
+                                data.add_acceleration((int(nums[3]), int(nums[4]), int(nums[5])))
 
 
         file = open(file_path, "r")
