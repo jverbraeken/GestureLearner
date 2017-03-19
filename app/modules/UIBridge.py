@@ -1,8 +1,7 @@
 # coding=utf-8
 import uuid
 from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
+from tkinter import ttk, filedialog, messagebox
 
 
 def register(service_locator):
@@ -12,45 +11,63 @@ def register(service_locator):
 
 class UIBridge:
     service_locator = None
-    tree = None
-    item = None
-    entry = None
+
+    # Window
+
+    def set_window_size(self, frame, width, height, x=300, y=300):
+        frame.geometry(str(width) + "x" + str(height) + "+" + str(x) + "+" + str(y))
 
     def create_window(self):
         return Tk()
+
+    # Button
 
     def add_button(self, frame, text_in, command_in):
         button = Button(frame, text=text_in, comman=command_in)
         button.pack()
         return button
 
+    # Textbox
+
     def add_textbox(self, frame):
-        self.entry = Entry(frame, width=20)
-        self.entry.pack()
-        return self.entry
+        entry = Entry(frame, width=20)
+        entry.pack()
+        return entry
 
-    def create_tree(self, parent):
-        self.tree = ttk.Treeview(parent)
-        self.tree.heading('#0', text='Gestures')
-        self.tree.pack()
+    def get_textbox_string(self, textbox):
+        return textbox.get()
 
-    def add_gesture(self):
-        if self.entry.get()!='':
-            self.tree.insert('', 'end', uuid.uuid4(), text=self.entry.get())
-            self.entry.delete(0, 'end')
-            return self.entry.get()
+    def clear_textbox(self, textbox):
+        textbox.delete(0, "end")
 
-    def add_sample(self):
-        if self.entry.get()!='':
-            item = self.tree.focus()
-            if item!='':
-                child = self.tree.insert(item, 'end', text=self.entry.get())
-                self.entry.delete(0, 'end')
-                return self.entry.get()
+    # Tree
 
+    def add_tree(self, parent):
+        tree = ttk.Treeview(parent)
+        tree.pack()
+        return tree
 
-    def set_window_size(self, frame, width, height, x=300, y=300):
-        frame.geometry(str(width) + "x" + str(height) + "+" + str(x) + "+" + str(y))
+    def add_to_tree(self, tree, text, parent):
+        return tree.insert(parent, 'end', uuid.uuid4(), text=text)
+
+    def tree_focus(self, tree):
+        return tree.focus()
+
+    # Dialogs
+
+    def show_error(self, text):
+        messagebox.showerror("Error", text)
+
+    def show_warning(self, text):
+        messagebox.showwarning("Warning", text)
+
+    def show_info(self, text):
+        messagebox.showinfo("Information", text)
+
+    def ask_question(self, text):
+        return messagebox.askquestion("Question", text)
+
+    # Window Dialogs
 
     def show_save_dialog(self, parent, title, initial_directory, file_types, default_extension):
         return filedialog.asksaveasfilename(parent=parent, defaultextension=default_extension,
