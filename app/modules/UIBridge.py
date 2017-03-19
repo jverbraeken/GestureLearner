@@ -43,8 +43,13 @@ class UIBridge:
     # Tree
 
     def add_tree(self, parent):
-        tree = ttk.Treeview(parent)
-        tree.pack()
+        frame = Frame(parent)
+        frame.pack(side=TOP)
+        scroll = ttk.Scrollbar(frame, orient=VERTICAL)
+        tree = ttk.Treeview(frame, yscrollcommand=scroll.set)
+        scroll.configure(command=tree.yview)
+        tree.pack(side=LEFT, fill=BOTH)
+        scroll.pack(side=RIGHT, fill=Y)
         return tree
 
     def add_to_tree(self, tree, text, parent):

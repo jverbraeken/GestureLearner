@@ -66,10 +66,13 @@ class FrameMain(Frame):
         self.logger.user_input("Button pressed: create_new_gesture")
         self.update_selected()
         name = self.ui.get_textbox_string(self.textbox)
-        if name is not "":
-            uuid = self.ui.add_to_tree(self.tree, name, "")
-            self.ui.clear_textbox(self.textbox)
-            self.sL.data.add_gesture(name, uuid)
+        if name is "":
+            self.ui.show_error("Please enter a valid name")
+            self.logger.message("create_new_gesture aborted - no name entered")
+            return
+        uuid = self.ui.add_to_tree(self.tree, name, "")
+        self.ui.clear_textbox(self.textbox)
+        self.sL.data.add_gesture(name, uuid)
 
     def create_new_sample(self):
         """
@@ -82,10 +85,13 @@ class FrameMain(Frame):
             self.logger.message("create_new_sample aborted - no gesture selected")
             return
         name = self.ui.get_textbox_string(self.textbox)
-        if name is not "":
-            uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
-            self.ui.clear_textbox(self.textbox)
-            self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[self.selected_gesture][1])
+        if name is "":
+            self.ui.show_error("Please enter a valid name")
+            self.logger.message("create_new_sample aborted - no name entered")
+            return
+        uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
+        self.ui.clear_textbox(self.textbox)
+        self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[self.selected_gesture][1])
 
     def create_new_time_state(self):
         """
