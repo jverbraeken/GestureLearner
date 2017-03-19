@@ -103,10 +103,12 @@ class FrameMain(Frame):
             self.ui.show_error("Please select a sample first")
             self.logger.message("create_new_time_state aborted - no sample selected")
             return
-        time_state_tuple = (0, 1, 2, 3, 4, 5)
-        if time_state_tuple is not None:
-            uuid = self.ui.add_to_tree(self.tree, str(time_state_tuple), self.selected_sample)
-            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[self.selected_sample][1])
+        rotation_tuple = (0, 1, 2)
+        acceleration_tuple = (3, 4, 5)
+        if rotation_tuple is not None and acceleration_tuple is not None:
+            uuid = self.ui.add_to_tree(self.tree, "rot: " + str(rotation_tuple) + " / acc: " + str(acceleration_tuple),
+                                       self.selected_sample)
+            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1])
 
     def save(self):
         path = self.sL.ui_bridge.show_save_dialog(
@@ -137,7 +139,8 @@ class FrameMain(Frame):
                         ("Gesture Recognition Toolkit files", ".grt")],
             default_extension=".grtraw")
         if path != "":
-            self.reader.read_file(path)
+            self.sL.data = self.reader.read_file(path)
+            self.reload_treeview()
 
     def start_recording(self):
         data = self.sL.data
@@ -164,3 +167,14 @@ class FrameMain(Frame):
                 self.selected_gesture = data_item[1].parent.parent.uuid
                 self.selected_sample = data_item[1].parent.uuid
                 self.selected_time_state = data_item[1].uuid
+
+    def reload_treeview(self):
+        self.ui.tree_clear(self.tree)
+        for gesture in self.sL.data.gestures:
+            self.ui.add_to_tree(self.tree, gesture.name, "", gesture.uuid)
+            for sample in gesture.samples:
+                self.ui.add_to_tree(self.tree, sample.name, gesture.uuid, sample.uuid)
+                for time_state in sample.time_states:
+                    self.ui.add_to_tree(self.tree,
+                                        "rot: " + str(time_state.rotation) + " / acc: " + str(time_state.acceleration),
+                                        sample.uuid, time_state.uuid)
