@@ -35,7 +35,9 @@ class FrameMain(Frame):
         self.parent.title(Constants.APPLICATION_NAME)
         self.pack(fill=BOTH, expand=1)
         self.sL.ui_bridge.set_window_size(parent, Constants.WIDTH, Constants.HEIGHT)
+        self.sL.ui_bridge.create_tree(parent)
 
+        self.sL.ui_bridge.add_textbox(parent)
         self.sL.ui_bridge.add_button(parent, STRING_NEW_GESTURE, self.create_new_gesture)
         self.sL.ui_bridge.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
         self.sL.ui_bridge.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
@@ -44,13 +46,14 @@ class FrameMain(Frame):
         self.sL.ui_bridge.add_button(parent, STRING_EXPORT, self.export)
         self.sL.ui_bridge.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.sL.ui_bridge.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
-
         self.logger = self.sL.logger_factory.get_logger(Loggers.ui)
 
     def create_new_gesture(self):
         """
         Create a new gesture
         """
+        self.sL.ui_bridge.add_gesture()
+
         self.logger.user_input("Button pressed: create_new_gesture")
         self.sL.data.add_gesture("foo")
 
@@ -58,6 +61,7 @@ class FrameMain(Frame):
         """
         Create a new gesture sample
         """
+        self.sL.ui_bridge.add_sample()
         self.logger.user_input("Button pressed: create_new_sample")
         self.sL.data.add_sample("bar")
 
