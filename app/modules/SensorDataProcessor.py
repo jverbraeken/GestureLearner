@@ -22,12 +22,10 @@ class SensorDataProcessor:
         """
         Processes the incoming tuple. TODO: the data may not be a tuple!
         Args:
-            data: a tuple containing the data
+            data: a tuple containing a tuple for the rotation and a tuple for the acceleration
 
         Returns: -
 
         """
         for listener in self.listeners:
-            listener.new_time_state()
-            listener.rotation_received(data[0], data[1], data[2])
-            listener.acceleration_received(data[3], data[4], data[5])
+            listener.data_received(data[0][0], data[0][1], data[0][2], data[1][0], data[1][1], data[1][2])

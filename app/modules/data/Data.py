@@ -1,6 +1,5 @@
 # coding=utf-8
 import operator
-import uuid
 
 from app.modules.data import DataLayers
 
@@ -25,6 +24,7 @@ class TimeState:
 
     def add_acceleration(self, tuple):
         self.acceleration = tuple
+
 
 class Sample:
     name = ""
@@ -91,7 +91,6 @@ class Data:
 
     def __init__(self, service_locator):
         self.sL = service_locator
-        self.sL.sensor_data_processor.add_listener(self.SampleCreator(self))
 
     def get_selected_gesture(self):
         return self.gestures[self.selected_gesture]
@@ -104,21 +103,6 @@ class Data:
         selected_gesture = self.gestures[self.selected_gesture]
         selected_sample = selected_gesture.samples[selected_gesture.selected_sample]
         return selected_sample.time_states[selected_sample.selected_time_state]
-
-    class SampleCreator:
-        outer_class = None
-
-        def __init__(self, outer_class):
-            self.outer_class = outer_class
-
-        def new_time_state(self):
-            self.outer_class.get_selected_sample().add_time_state(uuid.uuid4())
-
-        def rotation_received(self, rot_tuple):
-            self.outer_class.get_selected_sample().add_rotation(rot_tuple)
-
-        def acceleration_received(self, rot_tuple):
-            self.outer_class.get_selected_sample().add_acceleration(rot_tuple)
 
     def add_gesture(self, name, uuid):
         gesture = Gesture(name, uuid)

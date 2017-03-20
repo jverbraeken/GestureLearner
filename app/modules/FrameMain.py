@@ -33,8 +33,20 @@ class FrameMain(Frame):
     selected_sample = None
     selected_time_state = None
 
-
     def __init__(self, parent, service_locator):
+
+        class DataToTreeUpdater:
+            outer_class = None
+
+            def __init__(self, outer_class):
+                self.outer_class = outer_class
+
+            def data_received(self, data):
+                uuid = self.ui.add_to_tree(self.tree,
+                                           "rot: " + str(data[0]) + " / acc: " + str(data[1]),
+                                           self.outer_class.selected_sample)
+                self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.outer_class.selected_sample)][1])
+
         Frame.__init__(self, parent)
 
         self.sL = service_locator
@@ -58,6 +70,10 @@ class FrameMain(Frame):
         self.sL.ui_bridge.add_button(parent, STRING_EXPORT, self.export)
         self.sL.ui_bridge.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.sL.ui_bridge.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
+
+        self.sL.sensor_data_processor.add_listener(DataToTreeUpdater(self))
+
+    ########## Button handlers
 
     def create_new_gesture(self):
         """
@@ -111,6 +127,7 @@ class FrameMain(Frame):
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1])
 
     def save(self):
+        self.logger.user_input("Button pressed: save")
         path = self.sL.ui_bridge.show_save_dialog(
             parent=self.parent,
             title=STRING_SAVE_DIALOG,
@@ -121,6 +138,7 @@ class FrameMain(Frame):
             self.writer.write_grt(path)
 
     def export(self):
+        self.logger.user_input("Button pressed: export")
         path = self.sL.ui_bridge.show_save_dialog(
             parent=self.parent,
             title=STRING_SAVE_DIALOG,
@@ -131,6 +149,7 @@ class FrameMain(Frame):
             self.writer.write_grtraw(path)
 
     def open(self):
+        self.logger.user_input("Button pressed: open")
         path = self.sL.ui_bridge.show_open_dialog(
             parent=self.parent,
             title=STRING_OPEN_DIALOG,
@@ -143,15 +162,23 @@ class FrameMain(Frame):
             self.reload_treeview()
 
     def start_recording(self):
-        data = self.sL.data
-        data.gestures[data.selected_gesture].add_sample()
+        self.logger.user_input("Button pressed: start_recording")
+        self.update_selected()
+        if not self.selected_gesture:
+            self.ui.show_error("Please select a gesture first")
+            self.logger.message("create_new_sample aborted - no gesture selected")
+            return
+        self.sL.data.get_selected_gesture().add_sample()
         self.sL.udp_scanner.start_listening("0.0.0.0", 55056, self.redirect_raw_recording)
 
     def stop_recording(self):
+        self.logger.user_input("Button pressed: stop_recording")
         self.sL.udp_scanner.stop_listening()
 
+    ######## MISC
+
     def redirect_raw_recording(self, raw_data):
-        data = self.sL.byte_stream_interpreter.interpret_rotation(raw_data)
+        data = self.sL.byte_stream_interpreter.interpret_rot_acc(raw_data)
         self.sL.sensor_data_processor.process_data(data)
 
     def update_selected(self):

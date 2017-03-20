@@ -16,9 +16,13 @@ class ByteStreamInterpreter:
         self.service_locator = service_locator
         self.logger = service_locator.logger_factory.get_logger(Loggers.byte_stream_interpreter)
 
-    def interpret_rotation(self, byte_string):
-        (x,) = unpack_from('!f', byte_string, 0)
-        (y,) = unpack_from('!f', byte_string, 4)
-        (z,) = unpack_from('!f', byte_string, 8)
-        self.logger.user_input("interpreted rotation: x = " + str(x) + ", y = " + str(y) + ", z = " + str(z))
-        return x, y, z
+    def interpret_rot_acc(self, byte_string):
+        (rx,) = unpack_from('!f', byte_string, 0)
+        (ry,) = unpack_from('!f', byte_string, 4)
+        (rz,) = unpack_from('!f', byte_string, 8)
+        (ax,) = unpack_from('!f', byte_string, 12)
+        (ay,) = unpack_from('!f', byte_string, 14)
+        (az,) = unpack_from('!f', byte_string, 16)
+        self.logger.user_input("interpreted rotation: x = " + str(rx) + ", y = " + str(ry) + ", z = " + str(
+            rz) + " / acceleration: x = " + str(ax) + ", y = " + str(ay) + ", z = " + str(az))
+        return (rx, ry, rz), (ax, ay, az)
