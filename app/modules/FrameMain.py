@@ -1,6 +1,7 @@
 # coding=utf-8
 from tkinter import Frame, BOTH
 
+from app.modules.data import DataLayers
 from app.modules.logging import Loggers
 from app.system import Constants
 
@@ -22,12 +23,23 @@ class FrameMain(Frame):
     background = "white"
     sL = None
     logger = None
+    ui = None
+
+    # UI
+    textbox = None
+    tree = None
+
+    selected_gesture = None
+    selected_sample = None
+    selected_time_state = None
 
 
     def __init__(self, parent, service_locator):
         Frame.__init__(self, parent)
 
         self.sL = service_locator
+        self.logger = self.sL.logger_factory.get_logger(Loggers.ui)
+        self.ui = self.sL.ui_bridge
         self.writer = self.sL.grt_writer
         self.reader = self.sL.grt_reader
 
@@ -35,9 +47,9 @@ class FrameMain(Frame):
         self.parent.title(Constants.APPLICATION_NAME)
         self.pack(fill=BOTH, expand=1)
         self.sL.ui_bridge.set_window_size(parent, Constants.WIDTH, Constants.HEIGHT)
-        self.sL.ui_bridge.create_tree(parent)
 
-        self.sL.ui_bridge.add_textbox(parent)
+        self.tree = self.sL.ui_bridge.add_tree(parent)
+        self.textbox = self.sL.ui_bridge.add_textbox(parent)
         self.sL.ui_bridge.add_button(parent, STRING_NEW_GESTURE, self.create_new_gesture)
         self.sL.ui_bridge.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
         self.sL.ui_bridge.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
@@ -46,33 +58,55 @@ class FrameMain(Frame):
         self.sL.ui_bridge.add_button(parent, STRING_EXPORT, self.export)
         self.sL.ui_bridge.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.sL.ui_bridge.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
-        self.logger = self.sL.logger_factory.get_logger(Loggers.ui)
 
     def create_new_gesture(self):
         """
         Create a new gesture
         """
-        self.sL.ui_bridge.add_gesture()
-
         self.logger.user_input("Button pressed: create_new_gesture")
-        self.sL.data.add_gesture("foo")
+        self.update_selected()
+        name = self.ui.get_textbox_string(self.textbox)
+        if name is "":
+            self.ui.show_error("Please enter a valid name")
+            self.logger.message("create_new_gesture aborted - no name entered")
+            return
+        uuid = self.ui.add_to_tree(self.tree, name, "")
+        self.ui.clear_textbox(self.textbox)
+        self.sL.data.add_gesture(name, uuid)
 
     def create_new_sample(self):
         """
         Create a new gesture sample
         """
-        self.sL.ui_bridge.add_sample()
         self.logger.user_input("Button pressed: create_new_sample")
-        self.sL.data.add_sample("bar")
+        self.update_selected()
+        if not self.selected_gesture:
+            self.ui.show_error("Please select a gesture first")
+            self.logger.message("create_new_sample aborted - no gesture selected")
+            return
+        name = self.ui.get_textbox_string(self.textbox)
+        if name is "":
+            self.ui.show_error("Please enter a valid name")
+            self.logger.message("create_new_sample aborted - no name entered")
+            return
+        uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
+        self.ui.clear_textbox(self.textbox)
+        self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[self.selected_gesture][1])
 
     def create_new_time_state(self):
         """
         Create a new gesture sample time state (rotation / acceleration)
         """
         self.logger.user_input("Button pressed: create_new_time_state")
-        self.sL.data.add_time_state()
-        self.sL.data.add_rotation((0, 1, 2))
-        self.sL.data.add_acceleration((3, 4, 5))
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("create_new_time_state aborted - no sample selected")
+            return
+        time_state_tuple = (0, 1, 2, 3, 4, 5)
+        if time_state_tuple is not None:
+            uuid = self.ui.add_to_tree(self.tree, str(time_state_tuple), self.selected_sample)
+            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[self.selected_sample][1])
 
     def save(self):
         path = self.sL.ui_bridge.show_save_dialog(
@@ -116,3 +150,17 @@ class FrameMain(Frame):
     def redirect_raw_recording(self, raw_data):
         data = self.sL.byte_stream_interpreter.interpret_rotation(raw_data)
         self.sL.sensor_data_processor.process_data(data)
+
+    def update_selected(self):
+        item = self.ui.tree_focus(self.tree)
+        if item:
+            data_item = self.sL.data.uuid_dict[item]
+            if data_item[0] == DataLayers.gesture:
+                self.selected_gesture = data_item[1].uuid
+            elif data_item[0] == DataLayers.sample:
+                self.selected_gesture = data_item[1].parent.uuid
+                self.selected_sample = data_item[1].uuid
+            elif data_item[0] == DataLayers.time_state:
+                self.selected_gesture = data_item[1].parent.parent.uuid
+                self.selected_sample = data_item[1].parent.uuid
+                self.selected_time_state = data_item[1].uuid

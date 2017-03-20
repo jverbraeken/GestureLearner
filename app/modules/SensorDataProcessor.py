@@ -28,4 +28,6 @@ class SensorDataProcessor:
 
         """
         for listener in self.listeners:
+            listener.new_time_state()
             listener.rotation_received(data[0], data[1], data[2])
+            listener.acceleration_received(data[3], data[4], data[5])
