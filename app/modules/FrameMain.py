@@ -46,18 +46,18 @@ class FrameMain(Frame):
         self.parent = parent
         self.parent.title(Constants.APPLICATION_NAME)
         self.pack(fill=BOTH, expand=1)
-        self.sL.ui_bridge.set_window_size(parent, Constants.WIDTH, Constants.HEIGHT)
+        self.ui.set_window_size(parent, Constants.WIDTH, Constants.HEIGHT)
 
-        self.tree = self.sL.ui_bridge.add_tree(parent)
-        self.textbox = self.sL.ui_bridge.add_textbox(parent)
-        self.sL.ui_bridge.add_button(parent, STRING_NEW_GESTURE, self.create_new_gesture)
-        self.sL.ui_bridge.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
-        self.sL.ui_bridge.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
-        self.sL.ui_bridge.add_button(parent, STRING_OPEN, self.open)
-        self.sL.ui_bridge.add_button(parent, STRING_SAVE, self.save)
-        self.sL.ui_bridge.add_button(parent, STRING_EXPORT, self.export)
-        self.sL.ui_bridge.add_button(parent, STRING_START_RECORDING, self.start_recording)
-        self.sL.ui_bridge.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
+        self.tree = self.ui.add_tree(parent)
+        self.textbox = self.ui.add_textbox(parent)
+        self.ui.add_button(parent, STRING_NEW_GESTURE, self.create_new_gesture)
+        self.ui.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
+        self.ui.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
+        self.ui.add_button(parent, STRING_OPEN, self.open)
+        self.ui.add_button(parent, STRING_SAVE, self.save)
+        self.ui.add_button(parent, STRING_EXPORT, self.export)
+        self.ui.add_button(parent, STRING_START_RECORDING, self.start_recording)
+        self.ui.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
 
     def create_new_gesture(self):
         """
@@ -111,7 +111,7 @@ class FrameMain(Frame):
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1])
 
     def save(self):
-        path = self.sL.ui_bridge.show_save_dialog(
+        path = self.ui.show_save_dialog(
             parent=self.parent,
             title=STRING_SAVE_DIALOG,
             initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
@@ -121,7 +121,7 @@ class FrameMain(Frame):
             self.writer.write_grt(path)
 
     def export(self):
-        path = self.sL.ui_bridge.show_save_dialog(
+        path = self.ui.show_save_dialog(
             parent=self.parent,
             title=STRING_SAVE_DIALOG,
             initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
@@ -131,7 +131,7 @@ class FrameMain(Frame):
             self.writer.write_grtraw(path)
 
     def open(self):
-        path = self.sL.ui_bridge.show_open_dialog(
+        path = self.ui.show_open_dialog(
             parent=self.parent,
             title=STRING_OPEN_DIALOG,
             initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
