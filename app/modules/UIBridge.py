@@ -47,6 +47,7 @@ class UIBridge:
         frame.pack(side=TOP)
         scroll = ttk.Scrollbar(frame, orient=VERTICAL)
         tree = ttk.Treeview(frame, yscrollcommand=scroll.set)
+        tree.heading('#0', text='Gestures')
         scroll.configure(command=tree.yview)
         tree.pack(side=LEFT, fill=BOTH)
         scroll.pack(side=RIGHT, fill=Y)
