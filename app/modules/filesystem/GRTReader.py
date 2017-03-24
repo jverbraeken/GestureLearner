@@ -1,5 +1,6 @@
 # coding=utf-8
 import re
+import uuid
 
 from app.modules.data import Data
 
@@ -44,8 +45,6 @@ class GRTReader:
                     skip()
                 if line.startswith("NumberOfClasses"):
                     num_classes_expected = int(line[line.index(':') + 2:-1])
-                    for i in range(num_classes_expected):
-                        data.add_gesture()
                 if line.startswith("ClassIDsAndCounters"):
                     for i in range(num_classes_expected):
                         line = file.readline()
@@ -53,7 +52,7 @@ class GRTReader:
                 if line.startswith("ClassIDsAndNames"):
                     for i in range(num_classes_expected):
                         line = file.readline()
-                        data.gestures[i].name = line.split("\t")[1]
+                        data.add_gesture(line.split("\t")[1], uuid.uuid4())
                 if line.startswith("ClassIDsAndDescriptions"):
                     for i in range(num_classes_expected):
                         line = file.readline()
@@ -67,7 +66,8 @@ class GRTReader:
                             file.readline()  # ClassID: ...
                             line = file.readline()
                             if line.startswith("SampleName"):
-                                data.add_sample(line[line.index(':') + 2:-1])
+                                data.add_sample(line[line.index(':') + 2:-1], uuid.uuid4(),
+                                                data.gestures[data.selected_gesture])
                                 line = file.readline()
                             else:
                                 data.add_sample()
@@ -76,13 +76,13 @@ class GRTReader:
                             for rot in range(time_series_length):
                                 line = file.readline()
                                 nums = re.split("\W+", line)
-                                data.add_time_state()
+                                data.add_time_state(uuid.uuid4(), data.get_selected_sample())
                                 data.add_rotation((int(nums[0]), int(nums[1]), int(nums[2])))
                                 data.add_acceleration((int(nums[3]), int(nums[4]), int(nums[5])))
 
 
         file = open(file_path, "r")
-        Data.register(self.service_locator)
-        data = self.service_locator.data
+        data = Data.Data(self.service_locator)
         read_file(file, data)
         file.close()
+        return data

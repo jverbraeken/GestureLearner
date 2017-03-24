@@ -53,11 +53,16 @@ class UIBridge:
         scroll.pack(side=RIGHT, fill=Y)
         return tree
 
-    def add_to_tree(self, tree, text, parent):
-        return tree.insert(parent, 'end', uuid.uuid4(), text=text)
+    def add_to_tree(self, tree, text, parent, uuid_in=None):
+        if uuid_in is None:
+            uuid_in = uuid.uuid4()
+        return tree.insert(parent, 'end', uuid_in, text=text)
 
     def tree_focus(self, tree):
         return tree.focus()
+
+    def tree_clear(self, tree):
+        tree.delete(*tree.get_children())
 
     # Dialogs
 
