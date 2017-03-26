@@ -1,6 +1,5 @@
 # coding=utf-8
 import operator
-import uuid
 
 from app.modules.data import DataLayers
 
@@ -11,14 +10,11 @@ def register(service_locator):
 
 
 class TimeState:
-    rotation = None
-    acceleration = None
-    uuid = None
-    parent = None
-
-    def __init__(self, uuid, parent):
+    def __init__(self, uuid, parent, rotation, acceleration):
         self.uuid = uuid
         self.parent = parent
+        self.rotation = rotation
+        self.acceleration = acceleration
 
     def add_rotation(self, tuple):
         self.rotation = tuple
@@ -27,20 +23,18 @@ class TimeState:
         self.acceleration = tuple
 
 class Sample:
-    name = ""
-    time_states = []
-    selected_time_state = None
-    uuid = None
-    parent = None
-
-    def __init__(self, uuid, parent, time_states=None):
+    def __init__(self, name, uuid, parent, time_states=None):
+        self.name = name
         self.uuid = uuid
         self.parent = parent
         if time_states is not None:
             self.time_states = time_states
+        else:
+            self.time_states = []
+        self.selected_time_state = None
 
-    def add_time_state(self, uuid):
-        time_state = TimeState(uuid, self)
+    def add_time_state(self, uuid, rotation, acceleration):
+        time_state = TimeState(uuid, self, rotation, acceleration)
         self.time_states.append(time_state)
         self.selected_time_state = len(self.time_states) - 1
         return time_state
@@ -53,21 +47,18 @@ class Sample:
 
 
 class Gesture:
-    selected_sample = None
-    name = ""
-    description = ""
-    samples = []
-    uuid = None
 
     def __init__(self, name, uuid):
-        self.uuid = uuid
+        self.selected_sample = None
         self.name = name
+        self.description = ""
+        self.samples = []
+        self.uuid = uuid
 
     def add_sample(self, name, uuid):
-        sample = Sample(uuid, self)
+        sample = Sample(name, uuid, self)
         self.samples.append(sample)
         self.selected_sample = len(self.samples) - 1
-        self.samples[self.selected_sample].name = name
         return sample
 
     def add_rotation(self, tuple):
@@ -76,22 +67,19 @@ class Gesture:
     def add_acceleration(self, tuple):
         self.samples[self.selected_sample].add_acceleration(tuple)
 
-    def add_time_state(self, uuid):
-        return self.samples[self.selected_sample].add_time_state()
+    def add_time_state(self, uuid, rotation, acceleration):
+        return self.samples[self.selected_sample].add_time_state(uuid, rotation, acceleration)
 
 
 class Data:
-    sL = None
-    gestures = []
-    name = ""
-    info = ""
-    selected_gesture = None
-
-    uuid_dict = {}
 
     def __init__(self, service_locator):
         self.sL = service_locator
-        self.sL.sensor_data_processor.add_listener(self.SampleCreator(self))
+        self.gestures = []
+        self.name = ""
+        self.info = ""
+        self.selected_gesture = None
+        self.uuid_dict = {}
 
     def get_selected_gesture(self):
         return self.gestures[self.selected_gesture]
@@ -105,21 +93,6 @@ class Data:
         selected_sample = selected_gesture.samples[selected_gesture.selected_sample]
         return selected_sample.time_states[selected_sample.selected_time_state]
 
-    class SampleCreator:
-        outer_class = None
-
-        def __init__(self, outer_class):
-            self.outer_class = outer_class
-
-        def new_time_state(self):
-            self.outer_class.get_selected_sample().add_time_state(uuid.uuid4())
-
-        def rotation_received(self, rot_tuple):
-            self.outer_class.get_selected_sample().add_rotation(rot_tuple)
-
-        def acceleration_received(self, rot_tuple):
-            self.outer_class.get_selected_sample().add_acceleration(rot_tuple)
-
     def add_gesture(self, name, uuid):
         gesture = Gesture(name, uuid)
         self.gestures.append(gesture)
@@ -132,8 +105,8 @@ class Data:
         self.uuid_dict[str(uuid)] = (DataLayers.sample, sample)
         return sample
 
-    def add_time_state(self, uuid, sample):
-        time_state = sample.add_time_state(uuid)
+    def add_time_state(self, uuid, sample, rotation, acceleration):
+        time_state = sample.add_time_state(uuid, rotation, acceleration)
         self.uuid_dict[str(uuid)] = (DataLayers.time_state, time_state)
         return time_state
 
