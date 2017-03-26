@@ -33,7 +33,6 @@ class FrameMain(Frame):
     selected_sample = None
     selected_time_state = None
 
-
     def __init__(self, parent, service_locator):
         Frame.__init__(self, parent)
 
@@ -58,6 +57,10 @@ class FrameMain(Frame):
         self.ui.add_button(parent, STRING_EXPORT, self.export)
         self.ui.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.ui.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
+
+    class prettyfloat(float):
+        def __repr__(self):
+            return "%0.2f" % self
 
     def create_new_gesture(self):
         """
@@ -91,7 +94,7 @@ class FrameMain(Frame):
             return
         uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
         self.ui.clear_textbox(self.textbox)
-        self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[self.selected_gesture][1])
+        self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[str(self.selected_gesture)][1])
 
     def create_new_time_state(self):
         """
@@ -108,7 +111,8 @@ class FrameMain(Frame):
         if rotation_tuple is not None and acceleration_tuple is not None:
             uuid = self.ui.add_to_tree(self.tree, "rot: " + str(rotation_tuple) + " / acc: " + str(acceleration_tuple),
                                        self.selected_sample)
-            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1])
+            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], rotation_tuple,
+                                        acceleration_tuple)
 
     def save(self):
         path = self.ui.show_save_dialog(
@@ -118,7 +122,7 @@ class FrameMain(Frame):
             file_types=[("Raw Gesture Recognition Toolkit files", ".grtraw")],
             default_extension=".grtraw")
         if path != "":
-            self.writer.write_grt(path)
+            self.writer.write_grtraw(path)
 
     def export(self):
         path = self.ui.show_save_dialog(
@@ -128,7 +132,7 @@ class FrameMain(Frame):
             file_types=[("Gesture Recognition Toolkit files", ".grt")],
             default_extension=".grt")
         if path != "":
-            self.writer.write_grtraw(path)
+            self.writer.write_grt(path)
 
     def open(self):
         path = self.ui.show_open_dialog(
@@ -143,16 +147,24 @@ class FrameMain(Frame):
             self.reload_treeview()
 
     def start_recording(self):
-        data = self.sL.data
-        data.gestures[data.selected_gesture].add_sample()
-        self.sL.udp_scanner.start_listening("0.0.0.0", 55056, self.redirect_raw_recording)
+        self.logger.user_input("Button pressed: process_data")
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("process_data aborted - no sample selected")
+            return
+        self.sL.udp_scanner.start_listening("0.0.0.0", 55056, self.process_data)
 
     def stop_recording(self):
         self.sL.udp_scanner.stop_listening()
 
-    def redirect_raw_recording(self, raw_data):
-        data = self.sL.byte_stream_interpreter.interpret_rotation(raw_data)
-        self.sL.sensor_data_processor.process_data(data)
+    def process_data(self, raw_data):
+        data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
+        uuid = self.ui.add_to_tree(self.tree,
+                                   "rot: " + str(map(self.prettyfloat, data[0])) + " / acc: " + str(
+                                       map(self.prettyfloat, data[1])),
+                                   self.selected_sample)
+        self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1])
 
     def update_selected(self):
         item = self.ui.tree_focus(self.tree)
@@ -176,5 +188,7 @@ class FrameMain(Frame):
                 self.ui.add_to_tree(self.tree, sample.name, gesture.uuid, sample.uuid)
                 for time_state in sample.time_states:
                     self.ui.add_to_tree(self.tree,
-                                        "rot: " + str(time_state.rotation) + " / acc: " + str(time_state.acceleration),
+                                        "rot: " + str([float("{0:.2f}".format(v)) for v in
+                                                       time_state.rotation]) + " / acc: " + str(
+                                            [float("{0:.2f}".format(v)) for v in time_state.acceleration]),
                                         sample.uuid, time_state.uuid)

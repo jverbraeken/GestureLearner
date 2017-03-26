@@ -3,6 +3,8 @@ import uuid
 from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 
+from app.system import Constants
+
 
 def register(service_locator):
     UIBridge.service_locator = service_locator
@@ -48,8 +50,9 @@ class UIBridge:
         scroll = ttk.Scrollbar(frame, orient=VERTICAL)
         tree = ttk.Treeview(frame, yscrollcommand=scroll.set)
         tree.heading('#0', text='Gestures')
+        tree.column("#0", minwidth=0, width=int(Constants.WIDTH * 0.9), stretch=NO)
         scroll.configure(command=tree.yview)
-        tree.pack(side=LEFT, fill=BOTH)
+        tree.pack(expand=YES, side=LEFT, fill=BOTH)
         scroll.pack(side=RIGHT, fill=Y)
         return tree
 

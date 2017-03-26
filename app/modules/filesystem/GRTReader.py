@@ -1,5 +1,4 @@
 # coding=utf-8
-import re
 import uuid
 
 from app.modules.data import Data
@@ -49,10 +48,11 @@ class GRTReader:
                     for i in range(num_classes_expected):
                         line = file.readline()
                         class_ids_and_counters.append(int(line.split("\t")[1]))
+                        data.add_gesture("Gesture", uuid.uuid4())
                 if line.startswith("ClassIDsAndNames"):
                     for i in range(num_classes_expected):
                         line = file.readline()
-                        data.add_gesture(line.split("\t")[1], uuid.uuid4())
+                        data.gestures[i].name = line.split("\t")[1]
                 if line.startswith("ClassIDsAndDescriptions"):
                     for i in range(num_classes_expected):
                         line = file.readline()
@@ -62,26 +62,26 @@ class GRTReader:
                 if line.startswith("LabelledTimeSeriesTrainingData"):
                     for class_id in range(num_classes_expected):
                         for sample in range(class_ids_and_counters[class_id]):
-                            file.readline() # **** TIME SERIES ****
+                            file.readline()  # **** TIME SERIES ****
                             file.readline()  # ClassID: ...
                             line = file.readline()
                             if line.startswith("SampleName"):
                                 data.add_sample(line[line.index(':') + 2:-1], uuid.uuid4(),
-                                                data.gestures[data.selected_gesture])
+                                                data.gestures[class_id])
                                 line = file.readline()
                             else:
-                                data.add_sample()
+                                data.add_sample("Sample", uuid.uuid4(),
+                                                data.gestures[class_id])
                             time_series_length = int(line[line.index(':') + 2:-1])
-                            file.readline() # TimeSeriesData:
+                            file.readline()  # TimeSeriesData:
                             for rot in range(time_series_length):
                                 line = file.readline()
-                                nums = re.split("\W+", line)
-                                data.add_time_state(uuid.uuid4(), data.get_selected_sample())
-                                data.add_rotation((int(nums[0]), int(nums[1]), int(nums[2])))
-                                data.add_acceleration((int(nums[3]), int(nums[4]), int(nums[5])))
+                                nums = line.split()
+                                data.add_time_state(uuid.uuid4(), data.get_selected_sample(),
+                                                    (float(nums[0]), float(nums[1]), float(nums[2])),
+                                                    (float(nums[3]), float(nums[4]), float(nums[5])))
 
-
-        file = open(file_path, "r")
+        file = open(file_path)
         data = Data.Data(self.service_locator)
         read_file(file, data)
         file.close()

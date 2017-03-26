@@ -25,21 +25,22 @@ class GRTWriter:
                 count += len(gesture.samples)
             return count
 
-        self.file.write("GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_self.file_V1.0\n")
-        self.file.write("DatasetName: " + self.service_locator.data.name + "\n")
-        self.file.write("InfoText: " + self.service_locator.data.info + "\n")
+        self.file.write("GRT_LABELLED_TIME_SERIES_CLASSIFICATION_DATA_FILE_V1.0\n")
+        self.file.write("DatasetName: " + self.service_locator.data.name.replace("\n", "") + "\n")
+        self.file.write("InfoText: " + self.service_locator.data.info.replace("\n", "") + "\n")
         self.file.write("NumDimensions: 6" + "\n")
         self.file.write("TotalNumTrainingExamples: " + str(count_training_samples()) + "\n")
         self.file.write("NumberOfClasses: " + str(len(self.service_locator.data.gestures)) + "\n")
         self.file.write("ClassIDsAndCounters:\n")
         for i, val in enumerate(self.service_locator.data.gestures):
             self.file.write(str(i + 1) + "\t" + str(len(val.samples)) + "\n")
-        self.file.write("ClassIDsAndNames:\n")
-        for i, val in enumerate(self.service_locator.data.gestures):
-            self.file.write(str(i + 1) + "\t" + val.name + "\n")
-        self.file.write("ClassIDsAndDescriptions:\n")
-        for i, val in enumerate(self.service_locator.data.gestures):
-            self.file.write(str(i + 1) + "\t" + val.description + "\n")
+        if self.write_raw:
+            self.file.write("ClassIDsAndNames:\n")
+            for i, val in enumerate(self.service_locator.data.gestures):
+                self.file.write(str(i + 1) + "\t" + val.name.replace("\n", "") + "\n")
+            self.file.write("ClassIDsAndDescriptions:\n")
+            for i, val in enumerate(self.service_locator.data.gestures):
+                self.file.write(str(i + 1) + "\t" + val.description.replace("\n", "") + "\n")
         self.file.write("UseExternalRanges: 0\n")
         self.file.write("LabelledTimeSeriesTrainingData:\n")
 
@@ -48,7 +49,8 @@ class GRTWriter:
             for sample in gesture.samples:
                 self.file.write("************TIME_SERIES************\n")
                 self.file.write("ClassID: " + str(i + 1) + "\n")
-                self.file.write("SampleName: " + sample.name + "\n")
+                if self.write_raw:
+                    self.file.write("SampleName: " + sample.name.replace("\n", "") + "\n")
                 self.file.write("TimeSeriesLength: " + str(len(sample.time_states)) + "\n")
                 self.file.write("TimeSeriesData:\n")
                 for time_state in sample.time_states:
