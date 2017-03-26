@@ -5,6 +5,7 @@ from app.modules.data import DataLayers
 from app.modules.logging import Loggers
 from app.system import Constants
 
+STRING_RENAME = "Rename"
 STRING_NEW_GESTURE = "New Gesture"
 STRING_NEW_SAMPLE = "New Sample"
 STRING_NEW_TIME_STATE = "New Time State"
@@ -49,6 +50,7 @@ class FrameMain(Frame):
 
         self.tree = self.ui.add_tree(parent)
         self.textbox = self.ui.add_textbox(parent)
+        self.ui.add_button(parent, STRING_RENAME, self.rename)
         self.ui.add_button(parent, STRING_NEW_GESTURE, self.create_new_gesture)
         self.ui.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
         self.ui.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
@@ -145,6 +147,37 @@ class FrameMain(Frame):
         if path != "":
             self.sL.data = self.reader.read_file(path)
             self.reload_treeview()
+
+    def rename(self):
+        """
+        Rename an item
+        """
+        self.logger.user_input("Button pressed: rename")
+        self.update_selected()
+        if not self.selected_sample and not self.selected_gesture:
+            self.ui.show_error("Please select a gesture or a sample first")
+            self.logger.message("rename aborted - no gesture or sample selected")
+            return
+        name = self.ui.get_textbox_string(self.textbox)
+        if name is "":
+            self.ui.show_error("Please enter a valid name")
+            self.logger.message("rename aborted - no name entered")
+            return
+        if self.selected_sample:
+            old = self.selected_sample
+            self.tree.detach(self.selected_sample)
+            uuid = self.ui.add_to_tree(self.tree, name, "")
+            parent = self.sL.data.add_sample(name, uuid)
+            for child in old.get_children:
+                self.tree.move(child, parent, 'end')
+        else:
+            old = self.ui.tree_focus(self.tree)
+            self.tree.detach(self.selected_gesture)
+            uuid = self.ui.add_to_tree(self.tree, name, "")
+            parent = self.sL.data.add_gesture(name, uuid)
+            for child in old.get_children:
+                self.tree.move(child,parent,'end')
+        self.ui.clear_textbox(self.textbox)
 
     def start_recording(self):
         self.logger.user_input("Button pressed: process_data")
