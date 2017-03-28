@@ -168,19 +168,19 @@ class FrameMain(Frame):
             self.logger.message("rename aborted - time state selected")
             return
         if self.selected_sample:
-            old = self.selected_sample
+            old_sample = self.selected_sample
             self.tree.detach(self.selected_sample)
-            uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
-            self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[str(self.selected_gesture)][1])
-            for child in self.tree.get_children(old):
-                self.tree.move(child, uuid, 'end')
+            new_sample = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
+            self.sL.data.add_sample(name, new_sample, self.sL.data.uuid_dict[str(self.selected_gesture)][1])
+            for child in self.tree.get_children(old_sample):
+                self.tree.move(child, new_sample, 'end')
         else:
-            old = self.selected_gesture
+            old_gesture = self.selected_gesture
             self.tree.detach(self.selected_gesture)
-            uuid = self.ui.add_to_tree(self.tree, name, "")
-            self.sL.data.add_gesture(name, uuid)
-            for child in self.tree.get_children(old):
-                self.tree.move(child, uuid, 'end')
+            new_gesture = self.ui.add_to_tree(self.tree, name, "")
+            self.sL.data.add_gesture(name, new_gesture)
+            for child in self.tree.get_children(old_gesture):
+                self.tree.move(child, new_gesture, 'end')
         self.ui.clear_textbox(self.textbox)
 
     def start_recording(self):
