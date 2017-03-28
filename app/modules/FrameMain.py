@@ -166,17 +166,17 @@ class FrameMain(Frame):
         if self.selected_sample:
             old = self.selected_sample
             self.tree.detach(self.selected_sample)
-            uuid = self.ui.add_to_tree(self.tree, name, "")
-            parent = self.sL.data.add_sample(name, uuid)
-            for child in old.get_children:
-                self.tree.move(child, parent, 'end')
+            uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
+            self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[str(self.selected_gesture)][1])
+            for child in self.tree.get_children(old):
+                self.tree.move(child, uuid, 'end')
         else:
-            old = self.ui.tree_focus(self.tree)
+            old = self.selected_gesture
             self.tree.detach(self.selected_gesture)
             uuid = self.ui.add_to_tree(self.tree, name, "")
-            parent = self.sL.data.add_gesture(name, uuid)
-            for child in old.get_children:
-                self.tree.move(child,parent,'end')
+            self.sL.data.add_gesture(name, uuid)
+            for child in self.tree.get_children(old):
+                self.tree.move(child, uuid, 'end')
         self.ui.clear_textbox(self.textbox)
 
     def start_recording(self):
