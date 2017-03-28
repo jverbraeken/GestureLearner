@@ -163,6 +163,10 @@ class FrameMain(Frame):
             self.ui.show_error("Please enter a valid name")
             self.logger.message("rename aborted - no name entered")
             return
+        if self.selected_time_state:
+            self.ui.show_error("Cannot rename a time state")
+            self.logger.message("rename aborted - time state selected")
+            return
         if self.selected_sample:
             old = self.selected_sample
             self.tree.detach(self.selected_sample)
@@ -205,9 +209,12 @@ class FrameMain(Frame):
             data_item = self.sL.data.uuid_dict[item]
             if data_item[0] == DataLayers.gesture:
                 self.selected_gesture = data_item[1].uuid
+                self.selected_sample = None
+                self.selected_time_state = None
             elif data_item[0] == DataLayers.sample:
                 self.selected_gesture = data_item[1].parent.uuid
                 self.selected_sample = data_item[1].uuid
+                self.selected_time_state = None
             elif data_item[0] == DataLayers.time_state:
                 self.selected_gesture = data_item[1].parent.parent.uuid
                 self.selected_sample = data_item[1].parent.uuid
