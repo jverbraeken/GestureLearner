@@ -7,6 +7,7 @@ from app.system import Constants
 
 STRING_NEW_GESTURE = "New Gesture"
 STRING_NEW_SAMPLE = "New Sample"
+STRING_DELETE_SAMPLE = "Delete Sample"
 STRING_NEW_TIME_STATE = "New Time State"
 STRING_OPEN = "Open"
 STRING_SAVE = "Save"
@@ -51,6 +52,7 @@ class FrameMain(Frame):
         self.textbox = self.ui.add_textbox(parent)
         self.ui.add_button(parent, STRING_NEW_GESTURE, self.create_new_gesture)
         self.ui.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
+        self.ui.add_button(parent, STRING_DELETE_SAMPLE, self.delete_sample)
         self.ui.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
         self.ui.add_button(parent, STRING_OPEN, self.open)
         self.ui.add_button(parent, STRING_SAVE, self.save)
@@ -114,6 +116,19 @@ class FrameMain(Frame):
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], rotation_tuple,
                                         acceleration_tuple)
 
+    def delete_sample(self):
+        """
+        Deletes the selected sample
+        """
+        self.logger.user_input("Button pressed: delete_sample")
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("delete_sample aborted - no sample selected")
+            return
+        self.ui.delete_from_tree(self.tree, self.selected_sample)
+        self.sL.data.delete_sample(self.selected_sample)
+
     def save(self):
         path = self.ui.show_save_dialog(
             parent=self.parent,
@@ -161,8 +176,8 @@ class FrameMain(Frame):
     def process_data(self, raw_data):
         data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
         uuid = self.ui.add_to_tree(self.tree,
-                                   "rot: " + str(map(self.prettyfloat, data[0])) + " / acc: " + str(
-                                       map(self.prettyfloat, data[1])),
+                                   "rot: " + ', '.join(format(f, '.2f') for f in data[0]) + " / acc: " + str(
+                                       ', '.join(format(f, '.2f') for f in data[1])),
                                    self.selected_sample)
         self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1])
 

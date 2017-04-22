@@ -61,6 +61,9 @@ class UIBridge:
             uuid_in = uuid.uuid4()
         return tree.insert(parent, 'end', uuid_in, text=text)
 
+    def delete_from_tree(self, tree, uuid_in):
+        tree.delete(uuid_in)
+
     def tree_focus(self, tree):
         return tree.focus()
 
