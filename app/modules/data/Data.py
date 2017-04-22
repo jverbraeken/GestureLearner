@@ -114,6 +114,10 @@ class Data:
         self.uuid_dict[str(sample)][1].parent.samples.remove(self.uuid_dict[str(sample)][1])
         del self.uuid_dict[str(sample)]
 
+    def delete_time_state(self, time_state):
+        self.uuid_dict[str(time_state)][1].parent.time_states.remove(self.uuid_dict[str(time_state)][1])
+        del self.uuid_dict[str(time_state)]
+
     def add_rotation(self, tuple):
         self.gestures[self.selected_gesture].add_rotation(tuple)
 
