@@ -110,6 +110,10 @@ class Data:
         self.uuid_dict[str(uuid)] = (DataLayers.time_state, time_state)
         return time_state
 
+    def delete_sample(self, sample):
+        self.uuid_dict[str(sample)][1].parent.samples.remove(self.uuid_dict[str(sample)][1])
+        del self.uuid_dict[str(sample)]
+
     def add_rotation(self, tuple):
         self.gestures[self.selected_gesture].add_rotation(tuple)
 
