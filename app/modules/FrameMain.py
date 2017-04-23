@@ -16,6 +16,10 @@ STRING_START_RECORDING = "Start Recording"
 STRING_STOP_RECORDING = "Stop Recording"
 STRING_OPEN_DIALOG = "Choose the grt or grtraw file you want to open"
 STRING_SAVE_DIALOG = "Choose where you want to save the GRT data"
+STRING_TRIM_FIRST_TIME_STATE = "Trim first Time State"
+STRING_TRIM_LAST_TIME_STATE = "Trim last Time State"
+STRING_TRIM_FIRST_TIME_STATE_X5 = "Trim first 5 Time State"
+STRING_TRIM_LAST_TIME_STATE_X5 = "Trim last 5 Time State"
 
 
 class FrameMain(Frame):
@@ -54,6 +58,10 @@ class FrameMain(Frame):
         self.ui.add_button(parent, STRING_NEW_SAMPLE, self.create_new_sample)
         self.ui.add_button(parent, STRING_DELETE_SAMPLE, self.delete_sample)
         self.ui.add_button(parent, STRING_NEW_TIME_STATE, self.create_new_time_state)
+        self.ui.add_button(parent, STRING_TRIM_FIRST_TIME_STATE, self.trim_first_time_state)
+        self.ui.add_button(parent, STRING_TRIM_LAST_TIME_STATE, self.trim_last_time_state)
+        self.ui.add_button(parent, STRING_TRIM_FIRST_TIME_STATE_X5, self.trim_first_time_state_x5)
+        self.ui.add_button(parent, STRING_TRIM_LAST_TIME_STATE_X5, self.trim_last_time_state_x5)
         self.ui.add_button(parent, STRING_OPEN, self.open)
         self.ui.add_button(parent, STRING_SAVE, self.save)
         self.ui.add_button(parent, STRING_EXPORT, self.export)
@@ -172,6 +180,83 @@ class FrameMain(Frame):
 
     def stop_recording(self):
         self.sL.udp_scanner.stop_listening()
+
+    def trim_first_time_state(self):
+        """
+        Deletes the first time state of the selected sample
+        """
+        self.logger.user_input("Button pressed: trim_first_time_state")
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("trim_first_time_state aborted - no sample selected")
+            return
+        if len(self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states) <= 0:
+            self.ui.show_error("The selected samples has no time states to trim")
+            self.logger.message("trim_first_time_state aborted - no time states available to trim")
+            return
+        target = self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states[0].uuid
+        self.ui.delete_from_tree(self.tree, target)
+        self.sL.data.delete_time_state(target)
+
+    def trim_last_time_state(self):
+        """
+        Deletes the last time state of the selected sample
+        """
+        self.logger.user_input("Button pressed: trim_last_time_state")
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("trim_last_time_state aborted - no sample selected")
+            return
+        length = len(self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states)
+        if length <= 0:
+            self.ui.show_error("The selected samples has no time states to trim")
+            self.logger.message("trim_last_time_state aborted - no time states available to trim")
+            return
+        target = self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states[length - 1].uuid
+        self.ui.delete_from_tree(self.tree, target)
+        self.sL.data.delete_time_state(target)
+
+    def trim_first_time_state_x5(self):
+        """
+        Deletes the first time state of the selected sample
+        """
+        self.logger.user_input("Button pressed: trim_first_time_state_x5")
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("trim_first_time_state_x5 aborted - no sample selected")
+            return
+        if len(self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states) <= 4:
+            self.ui.show_error("The selected samples has not enough time states to trim")
+            self.logger.message("trim_first_time_state_x5 aborted - not enough time states available to trim")
+            return
+        for i in range(5):
+            target = self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states[0].uuid
+            self.ui.delete_from_tree(self.tree, target)
+            self.sL.data.delete_time_state(target)
+
+    def trim_last_time_state_x5(self):
+        """
+        Deletes the last time state of the selected sample
+        """
+        self.logger.user_input("Button pressed: trim_last_time_state_x5")
+        self.update_selected()
+        if not self.selected_sample:
+            self.ui.show_error("Please select a sample first")
+            self.logger.message("trim_last_time_state_x5 aborted - no sample selected")
+            return
+        length = len(self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states)
+        if length <= 4:
+            self.ui.show_error("The selected samples has not enough time states to trim")
+            self.logger.message("trim_last_time_state_x5 aborted - not enough time states available to trim")
+            return
+        for i in range(5):
+            target = self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states[length - 1].uuid
+            self.ui.delete_from_tree(self.tree, target)
+            self.sL.data.delete_time_state(target)
+            length = len(self.sL.data.uuid_dict[str(self.selected_sample)][1].time_states)
 
     def process_data(self, raw_data):
         data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
