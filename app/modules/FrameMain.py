@@ -20,19 +20,11 @@ STRING_TRIM_FIRST_TIME_STATE = "Trim first Time State"
 STRING_TRIM_LAST_TIME_STATE = "Trim last Time State"
 STRING_TRIM_FIRST_TIME_STATE_X5 = "Trim first 5 Time State"
 STRING_TRIM_LAST_TIME_STATE_X5 = "Trim last 5 Time State"
+STRING_EXPORT_FRAMING = "Export framing"
 
 
 class FrameMain(Frame):
-    parent = None
-    writer = None
     background = "white"
-    sL = None
-    logger = None
-    ui = None
-
-    # UI
-    textbox = None
-    tree = None
 
     selected_gesture = None
     selected_sample = None
@@ -46,6 +38,7 @@ class FrameMain(Frame):
         self.ui = self.sL.ui_bridge
         self.writer = self.sL.grt_writer
         self.reader = self.sL.grt_reader
+        self.framer = self.sL.framer
 
         self.parent = parent
         self.parent.title(Constants.APPLICATION_NAME)
@@ -67,6 +60,7 @@ class FrameMain(Frame):
         self.ui.add_button(parent, STRING_EXPORT, self.export)
         self.ui.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.ui.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
+        self.ui.add_button(parent, STRING_EXPORT_FRAMING, self.export_framing)
 
     class prettyfloat(float):
         def __repr__(self):
@@ -292,3 +286,6 @@ class FrameMain(Frame):
                                                        time_state.rotation]) + " / acc: " + str(
                                             [float("{0:.2f}".format(v)) for v in time_state.acceleration]),
                                         sample.uuid, time_state.uuid)
+
+    def export_framing(self):
+        captures = self.framer.getCaptures()
