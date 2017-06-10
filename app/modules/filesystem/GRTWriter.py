@@ -55,7 +55,9 @@ class GRTWriter:
                 self.file.write("TimeSeriesData:\n")
                 for time_state in sample.time_states:
                     self.file.write(
-                        str(time_state.rotation)[1:-1].replace(",", "") + " " + str(time_state.acceleration)[
+                        str((round(time_state.rotation[0]), round(time_state.rotation[1]), round(time_state.rotation[2])))[1:-1].replace(",", "")
+                        + " "
+                        + str((round(time_state.acceleration[0]), round(time_state.acceleration[1]), round(time_state.acceleration[2])))[
                                                                                 1:-1].replace(",", "") + "\n")
 
     def write_grtraw(self, file_path):
