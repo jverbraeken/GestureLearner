@@ -10,11 +10,12 @@ def register(service_locator):
 
 
 class TimeState:
-    def __init__(self, uuid, parent, rotation, acceleration):
+    def __init__(self, uuid, parent, rotation, acceleration, timestamp):
         self.uuid = uuid
         self.parent = parent
         self.rotation = rotation
         self.acceleration = acceleration
+        self.timestamp = timestamp
 
     def add_rotation(self, tuple):
         self.rotation = tuple
