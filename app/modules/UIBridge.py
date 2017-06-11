@@ -16,7 +16,7 @@ class UIBridge:
 
     # Window
 
-    def set_window_size(self, frame, width, height, x=300, y=300):
+    def set_window_size(self, frame, width, height, x=100, y=100):
         frame.geometry(str(width) + "x" + str(height) + "+" + str(x) + "+" + str(y))
 
     def create_window(self):

@@ -1,6 +1,8 @@
 # coding=utf-8
 from tkinter import Frame, BOTH
 
+import time
+
 from app.modules.data import DataLayers
 from app.modules.logging import Loggers
 from app.system import Constants
@@ -116,7 +118,7 @@ class FrameMain(Frame):
             uuid = self.ui.add_to_tree(self.tree, "rot: " + str(rotation_tuple) + " / acc: " + str(acceleration_tuple),
                                        self.selected_sample)
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], rotation_tuple,
-                                        acceleration_tuple)
+                                        acceleration_tuple, int(round(time.time() * 1000)))
 
     def delete_sample(self):
         """
@@ -289,3 +291,11 @@ class FrameMain(Frame):
 
     def export_framing(self):
         captures = self.framer.getCaptures()
+        path = self.ui.show_save_dialog(
+            parent=self.parent,
+            title=STRING_SAVE_DIALOG,
+            initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
+            file_types=[("Unreal Wear Framing Files", ".uwf")],
+            default_extension=".uwf")
+        if path != "":
+            self.writer.write_uwf(path, captures)

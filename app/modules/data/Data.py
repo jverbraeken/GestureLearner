@@ -34,8 +34,8 @@ class Sample:
             self.time_states = []
         self.selected_time_state = None
 
-    def add_time_state(self, uuid, rotation, acceleration):
-        time_state = TimeState(uuid, self, rotation, acceleration)
+    def add_time_state(self, uuid, rotation, acceleration, timestamp):
+        time_state = TimeState(uuid, self, rotation, acceleration, timestamp)
         self.time_states.append(time_state)
         self.selected_time_state = len(self.time_states) - 1
         return time_state
@@ -68,8 +68,8 @@ class Gesture:
     def add_acceleration(self, tuple):
         self.samples[self.selected_sample].add_acceleration(tuple)
 
-    def add_time_state(self, uuid, rotation, acceleration):
-        return self.samples[self.selected_sample].add_time_state(uuid, rotation, acceleration)
+    def add_time_state(self, uuid, rotation, acceleration, timestamp):
+        return self.samples[self.selected_sample].add_time_state(uuid, rotation, acceleration, timestamp)
 
 
 class Data:
@@ -106,8 +106,8 @@ class Data:
         self.uuid_dict[str(uuid)] = (DataLayers.sample, sample)
         return sample
 
-    def add_time_state(self, uuid, sample, rotation, acceleration):
-        time_state = sample.add_time_state(uuid, rotation, acceleration)
+    def add_time_state(self, uuid, sample, rotation, acceleration, timestamp):
+        time_state = sample.add_time_state(uuid, rotation, acceleration, timestamp)
         self.uuid_dict[str(uuid)] = (DataLayers.time_state, time_state)
         return time_state
 

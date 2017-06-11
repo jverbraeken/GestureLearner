@@ -62,10 +62,10 @@ class GRTWriter:
 
     def write_grtraw(self, file_path):
         """
-        Writes the contents of the GRTWriter to the self.file specified
+        Writes the contents of the GRTWriter to the file specified
 
         Args:
-            self.file_path (str): The full path to the self.file to which the contents should be written
+            self.file_path (str): The full path to the file to which the contents should be written
         """
 
         self.file = open(file_path, "w")
@@ -76,14 +76,39 @@ class GRTWriter:
 
     def write_grt(self, file_path):
         """
-        Writes the contents of the GRTWriter to the self.file specified
+        Writes the contents of the GRTWriter to the file specified
 
         Args:
-            self.file_path (str): The full path to the self.file to which the contents should be written
+            self.file_path (str): The full path to the file to which the contents should be written
         """
 
         self.file = open(file_path, "w")
         self.write_raw = False
         self.write_header()
         self.write_body()
+        self.file.close()
+
+    def write_uwf(self, file_path, captures):
+        """
+        Writes the contents of the uwf captures to the file specified
+
+        Args:
+            self.file_path (str): The full path to the file to which the contents should be written
+        """
+        gestures = self.service_locator.data.gestures
+
+        self.file = open(file_path, "w")
+        self.file.write(str(len(captures)) + "\n")
+        for gesture in range(len(captures)):
+            self.file.write(str(len(captures[gesture])) + "\n")
+            self.file.write(gestures[gesture].name + "\n")
+            for dimension in captures[gesture]:
+                self.file.write(str(len(dimension)) + "\n")
+                for capture in dimension:
+                    self.file.write("CAPTURE\n")
+                    self.file.write(str(capture.start_time) + "\n")
+                    self.file.write(str(capture.end_time) + "\n")
+                    self.file.write(str(capture.start_value) + "\n")
+                    self.file.write(str(capture.end_value) + "\n")
+                    self.file.write(str(capture.state) + "\n")
         self.file.close()
