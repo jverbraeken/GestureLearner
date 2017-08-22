@@ -18,8 +18,8 @@ STRING_START_RECORDING = "Start Recording"
 STRING_STOP_RECORDING = "Stop Recording"
 STRING_OPEN_DIALOG = "Choose the grt or grtraw file you want to open"
 STRING_SAVE_DIALOG = "Choose where you want to save the GRT data"
-STRING_TRIM_FIRST_TIME_STATE = "Trim first Time State"
-STRING_TRIM_LAST_TIME_STATE = "Trim last Time State"
+STRING_TRIM_FIRST_TIME_STATE = "Trim first Time States"
+STRING_TRIM_LAST_TIME_STATE = "Trim last Time States"
 STRING_TRIM_FIRST_TIME_STATE_X5 = "Trim first 5 Time State"
 STRING_TRIM_LAST_TIME_STATE_X5 = "Trim last 5 Time State"
 STRING_EXPORT_FRAMING = "Export framing"
@@ -82,6 +82,7 @@ class FrameMain(Frame):
         uuid = self.ui.add_to_tree(self.tree, name, "")
         self.ui.clear_textbox(self.textbox)
         self.sL.data.add_gesture(name, uuid)
+        self.selected_gesture = self.sL.data.get_selected_gesture().uuid
 
     def create_new_sample(self):
         """
@@ -101,6 +102,7 @@ class FrameMain(Frame):
         uuid = self.ui.add_to_tree(self.tree, name, self.selected_gesture)
         self.ui.clear_textbox(self.textbox)
         self.sL.data.add_sample(name, uuid, self.sL.data.uuid_dict[str(self.selected_gesture)][1])
+        self.selected_sample = self.sL.data.get_selected_sample().uuid
 
     def create_new_time_state(self):
         """
@@ -256,11 +258,13 @@ class FrameMain(Frame):
 
     def process_data(self, raw_data):
         data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
-        uuid = self.ui.add_to_tree(self.tree,
-                                   "rot: " + ', '.join(format(f, '.2f') for f in data[0]) + " / acc: " + str(
-                                       ', '.join(format(f, '.2f') for f in data[1])),
-                                   self.selected_sample)
-        self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1])
+        if data != -1:
+            uuid = self.ui.add_to_tree(self.tree,
+                                       "rot: " + ', '.join(format(f, '.2f') for f in data[0]) + " / acc: " + str(
+                                           ', '.join(format(f, '.2f') for f in data[1])),
+                                       self.selected_sample)
+            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1],
+                                        data[2])
 
     def update_selected(self):
         item = self.ui.tree_focus(self.tree)

@@ -53,12 +53,22 @@ class GRTWriter:
                     self.file.write("SampleName: " + sample.name.replace("\n", "") + "\n")
                 self.file.write("TimeSeriesLength: " + str(len(sample.time_states)) + "\n")
                 self.file.write("TimeSeriesData:\n")
-                for time_state in sample.time_states:
-                    self.file.write(
-                        str((round(time_state.rotation[0]), round(time_state.rotation[1]), round(time_state.rotation[2])))[1:-1].replace(",", "")
-                        + " "
-                        + str((round(time_state.acceleration[0]), round(time_state.acceleration[1]), round(time_state.acceleration[2])))[
-                                                                                1:-1].replace(",", "") + "\n")
+                if self.write_raw:
+                    for time_state in sample.time_states:
+                        self.file.write(
+                            str((round(time_state.rotation[0]), round(time_state.rotation[1]), round(time_state.rotation[2])))[1:-1].replace(",", "")
+                            + " "
+                            + str((round(time_state.acceleration[0] * 100), round(time_state.acceleration[1] * 100), round(time_state.acceleration[2] * 100)))[1:-1].replace(",", "")
+                            + " "
+                            + str(time_state.timestamp)
+                            + "\n")
+                else:
+                    for time_state in sample.time_states:
+                        self.file.write(
+                            str((round(time_state.rotation[0]), round(time_state.rotation[1]), round(time_state.rotation[2])))[1:-1].replace(",", "")
+                            + " "
+                            + str((round(time_state.acceleration[0] * 100), round(time_state.acceleration[1] * 100), round(time_state.acceleration[2] * 100)))[1:-1].replace(",", "")
+                            + "\n")
 
     def write_grtraw(self, file_path):
         """

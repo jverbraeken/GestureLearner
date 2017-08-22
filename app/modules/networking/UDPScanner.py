@@ -37,14 +37,20 @@ class UDPScanner:
         Returns: - (use the parameter callback to retrieve the data contained in the packet)
 
         """
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.bind((ip, port))
-        self.thread_listen_run = True
-        self.thread_listen = Thread(target=self.listen_for_packets, args=(sock, callback))
-        self.thread_listen.start()
+        if self.thread_listen_run:
+            self.logger.warning("Ignored start recording - already recording")
+        else:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.bind((ip, port))
+            self.thread_listen_run = True
+            self.thread_listen = Thread(target=self.listen_for_packets, args=(sock, callback))
+            self.thread_listen.start()
 
     def stop_listening(self):
-        self.thread_listen_run = False
+        if self.thread_listen_run:
+            self.thread_listen_run = False
+        else:
+            self.logger.warning("Ignored stop recording - was not recording")
 
     def listen_for_packets(self, sock, callback):
         while self.thread_listen_run:
