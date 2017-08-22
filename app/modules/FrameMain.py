@@ -260,8 +260,8 @@ class FrameMain(Frame):
         data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
         if data != -1:
             uuid = self.ui.add_to_tree(self.tree,
-                                       "rot: " + ', '.join(format(f, '.2f') for f in data[0]) + " / acc: " + str(
-                                           ', '.join(format(f, '.2f') for f in data[1])),
+                                       "rot: " + ', '.join(format(f, '.0f') for f in data[0]) + " / acc: " + str(
+                                           ', '.join(format(f, '.1f') for f in data[1])),
                                        self.selected_sample)
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1],
                                         data[2])
@@ -288,9 +288,9 @@ class FrameMain(Frame):
                 self.ui.add_to_tree(self.tree, sample.name, gesture.uuid, sample.uuid)
                 for time_state in sample.time_states:
                     self.ui.add_to_tree(self.tree,
-                                        "rot: " + str([float("{0:.2f}".format(v)) for v in
+                                        "rot: " + str([float("{0:.0f}".format(v)) for v in
                                                        time_state.rotation]) + " / acc: " + str(
-                                            [float("{0:.2f}".format(v)) for v in time_state.acceleration]),
+                                            [float("{0:.1f}".format(v)) for v in time_state.acceleration]),
                                         sample.uuid, time_state.uuid)
 
     def export_framing(self):
