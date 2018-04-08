@@ -38,8 +38,6 @@ class GRTReader:
                     data.name = line[line.index(':') + 2:-1]
                 if line.startswith("InfoText"):
                     data.info = line[line.index(':') + 2:-1]
-                if line.startswith("NumDimensions"):
-                    skip()
                 if line.startswith("TotalNumTrainingExamples"):
                     skip()
                 if line.startswith("NumberOfClasses"):
@@ -57,8 +55,6 @@ class GRTReader:
                     for i in range(num_classes_expected):
                         line = file.readline()
                         data.gestures[i].description = line.split("\t")[1]
-                if line.startswith("UseExternalRanges"):
-                    skip()
                 if line.startswith("LabelledTimeSeriesTrainingData"):
                     for class_id in range(num_classes_expected):
                         for sample in range(class_ids_and_counters[class_id]):

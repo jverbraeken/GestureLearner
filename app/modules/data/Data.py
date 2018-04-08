@@ -77,8 +77,8 @@ class Data:
     def __init__(self, service_locator):
         self.sL = service_locator
         self.gestures = []
-        self.name = "Undefined name"
-        self.info = "Undefined info"
+        self.name = "Undefined"
+        self.info = "Undefined"
         self.selected_gesture = None
         self.uuid_dict = {}
 
