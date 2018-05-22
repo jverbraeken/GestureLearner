@@ -69,7 +69,9 @@ class GRTReader:
                                 data.add_sample("Sample", uuid.uuid4(),
                                                 data.gestures[class_id])
                             time_series_length = int(line[line.index(':') + 2:-1])
-                            file.readline()  # TimeSeriesData:
+                            line = file.readline()  # Duration:
+                            duration = int(line[line.index(':') + 2:-1])
+                            file.readline() #TimeSeriesData:
                             time_counter = 0
                             for time_serie in range(time_series_length):
                                 line = file.readline()
@@ -77,16 +79,16 @@ class GRTReader:
                                 if len(nums) > 6:
                                     data.add_time_state(uuid.uuid4(),
                                                         data.get_selected_sample(),
-                                                        (float(nums[0]), float(nums[1]), float(nums[2])),
+                                                        (float(nums[0]) / 100.0, float(nums[1]) / 100.0, float(nums[2]) / 100.0),
                                                         (float(nums[3]) / 100.0, float(nums[4]) / 100.0, float(nums[5]) / 100.0),
-                                                        nums[6])
+                                                        int(nums[6]))
                                 else:
                                     data.add_time_state(uuid.uuid4(),
                                                         data.get_selected_sample(),
-                                                        (float(nums[0]), float(nums[1]), float(nums[2])),
+                                                        (float(nums[0]) / 100.0, float(nums[1]) / 100.0, float(nums[2]) / 100.0),
                                                         (float(nums[3]) / 100.0, float(nums[4]) / 100.0, float(nums[5]) / 100.0),
                                                         time_counter)
-                                    time_counter += 50
+                                    time_counter += duration / time_series_length
 
         file = open(file_path)
         data = Data.Data(self.service_locator)

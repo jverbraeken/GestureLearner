@@ -18,8 +18,8 @@ STRING_START_RECORDING = "Start Recording"
 STRING_STOP_RECORDING = "Stop Recording"
 STRING_OPEN_DIALOG = "Choose the grt or grtraw file you want to open"
 STRING_SAVE_DIALOG = "Choose where you want to save the GRT data"
-STRING_TRIM_FIRST_TIME_STATE = "Trim first Time States"
-STRING_TRIM_LAST_TIME_STATE = "Trim last Time States"
+STRING_TRIM_FIRST_TIME_STATE = "Trim first Time State"
+STRING_TRIM_LAST_TIME_STATE = "Trim last Time State"
 STRING_TRIM_FIRST_TIME_STATE_X5 = "Trim first 5 Time State"
 STRING_TRIM_LAST_TIME_STATE_X5 = "Trim last 5 Time State"
 STRING_EXPORT_FRAMING = "Export framing"
@@ -260,7 +260,7 @@ class FrameMain(Frame):
         data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
         if data != -1:
             uuid = self.ui.add_to_tree(self.tree,
-                                       "rot: " + ', '.join(format(f, '.0f') for f in data[0]) + " / acc: " + str(
+                                       "rot: " + ', '.join(format(f, '.2f') for f in data[0]) + " / acc: " + str(
                                            ', '.join(format(f, '.1f') for f in data[1])),
                                        self.selected_sample)
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1],
