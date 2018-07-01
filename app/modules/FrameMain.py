@@ -22,7 +22,6 @@ STRING_TRIM_FIRST_TIME_STATE = "Trim first Time State"
 STRING_TRIM_LAST_TIME_STATE = "Trim last Time State"
 STRING_TRIM_FIRST_TIME_STATE_X5 = "Trim first 5 Time State"
 STRING_TRIM_LAST_TIME_STATE_X5 = "Trim last 5 Time State"
-STRING_EXPORT_FRAMING = "Export framing"
 
 
 class FrameMain(Frame):
@@ -40,7 +39,6 @@ class FrameMain(Frame):
         self.ui = self.sL.ui_bridge
         self.writer = self.sL.grt_writer
         self.reader = self.sL.grt_reader
-        self.framer = self.sL.framer
 
         self.parent = parent
         self.parent.title(Constants.APPLICATION_NAME)
@@ -62,7 +60,6 @@ class FrameMain(Frame):
         self.ui.add_button(parent, STRING_EXPORT, self.export)
         self.ui.add_button(parent, STRING_START_RECORDING, self.start_recording)
         self.ui.add_button(parent, STRING_STOP_RECORDING, self.stop_recording)
-        self.ui.add_button(parent, STRING_EXPORT_FRAMING, self.export_framing)
 
     class prettyfloat(float):
         def __repr__(self):
@@ -114,13 +111,17 @@ class FrameMain(Frame):
             self.ui.show_error("Please select a sample first")
             self.logger.message("create_new_time_state aborted - no sample selected")
             return
-        rotation_tuple = (0, 1, 2)
-        acceleration_tuple = (3, 4, 5)
+        zrotation = 0
+        rotation_tuple = (1, 2, 3)
+        acceleration_tuple = (4, 5, 6)
         if rotation_tuple is not None and acceleration_tuple is not None:
-            uuid = self.ui.add_to_tree(self.tree, "rot: " + str(rotation_tuple) + " / acc: " + str(acceleration_tuple),
+            uuid = self.ui.add_to_tree(self.tree,
+                                       "zRot: " + str(zrotation)
+                                       + " / vec: "+ str(rotation_tuple)
+                                       + " / acc: " + str(acceleration_tuple),
                                        self.selected_sample)
-            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], rotation_tuple,
-                                        acceleration_tuple, int(round(time.time() * 1000)))
+            self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], zrotation,
+                                        rotation_tuple, acceleration_tuple)
 
     def delete_sample(self):
         """
@@ -260,8 +261,9 @@ class FrameMain(Frame):
         data = self.sL.byte_stream_interpreter.interpret_data(raw_data)
         if data != -1:
             uuid = self.ui.add_to_tree(self.tree,
-                                       "rot: " + ', '.join(format(f, '.2f') for f in data[0]) + " / acc: " + str(
-                                           ', '.join(format(f, '.1f') for f in data[1])),
+                                       "zRot: " + str(format(data[0], '.2f')) +
+                                       " / vec: " + ', '.join(format(f, '.2f') for f in data[1]) +
+                                       " / acc: " + ', '.join(format(f, '.1f') for f in data[2]),
                                        self.selected_sample)
             self.sL.data.add_time_state(uuid, self.sL.data.uuid_dict[str(self.selected_sample)][1], data[0], data[1],
                                         data[2])
@@ -288,18 +290,7 @@ class FrameMain(Frame):
                 self.ui.add_to_tree(self.tree, sample.name, gesture.uuid, sample.uuid)
                 for time_state in sample.time_states:
                     self.ui.add_to_tree(self.tree,
-                                        "rot: " + str([float("{0:.0f}".format(v)) for v in
-                                                       time_state.rotation]) + " / acc: " + str(
-                                            [float("{0:.1f}".format(v)) for v in time_state.acceleration]),
-                                        sample.uuid, time_state.uuid)
-
-    def export_framing(self):
-        captures = self.framer.getCaptures()
-        path = self.ui.show_save_dialog(
-            parent=self.parent,
-            title=STRING_SAVE_DIALOG,
-            initial_directory=Constants.INITIAL_SAVE_DIRECTORY,
-            file_types=[("Unreal Wear Framing Files", ".uwf")],
-            default_extension=".uwf")
-        if path != "":
-            self.writer.write_uwf(path, captures)
+                                        "zRot: " + str(format(time_state.zRotation, '.2f')) +
+                                        " / vec: " + ', '.join(format(f, '.2f') for f in time_state.vector) +
+                                        " / acc: " + ', '.join(format(f, '.1f') for f in time_state.acceleration),
+                                        (sample.uuid, time_state.uuid))

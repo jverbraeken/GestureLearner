@@ -10,18 +10,12 @@ def register(service_locator):
 
 
 class TimeState:
-    def __init__(self, uuid, parent, rotation, acceleration, timestamp):
+    def __init__(self, uuid, parent, zRotation, vector, acceleration):
         self.uuid = uuid
         self.parent = parent
-        self.rotation = rotation
+        self.zRotation = zRotation
+        self.vector = vector
         self.acceleration = acceleration
-        self.timestamp = timestamp
-
-    def add_rotation(self, tuple):
-        self.rotation = tuple
-
-    def add_acceleration(self, tuple):
-        self.acceleration = tuple
 
 class Sample:
     def __init__(self, name, uuid, parent, time_states=None):
@@ -34,17 +28,11 @@ class Sample:
             self.time_states = []
         self.selected_time_state = None
 
-    def add_time_state(self, uuid, rotation, acceleration, timestamp):
-        time_state = TimeState(uuid, self, rotation, acceleration, timestamp)
+    def add_time_state(self, uuid, zRotation, vector, acceleration):
+        time_state = TimeState(uuid, self, zRotation, vector, acceleration)
         self.time_states.append(time_state)
         self.selected_time_state = len(self.time_states) - 1
         return time_state
-
-    def add_rotation(self, tuple):
-        self.time_states[self.selected_time_state].add_rotation(tuple)
-
-    def add_acceleration(self, tuple):
-        self.time_states[self.selected_time_state].add_acceleration(tuple)
 
 
 class Gesture:
@@ -62,14 +50,8 @@ class Gesture:
         self.selected_sample = len(self.samples) - 1
         return sample
 
-    def add_rotation(self, tuple):
-        self.samples[self.selected_sample].add_rotation(tuple)
-
-    def add_acceleration(self, tuple):
-        self.samples[self.selected_sample].add_acceleration(tuple)
-
-    def add_time_state(self, uuid, rotation, acceleration, timestamp):
-        return self.samples[self.selected_sample].add_time_state(uuid, rotation, acceleration, timestamp)
+    def add_time_state(self, uuid, zRotation, vector, acceleration):
+        return self.samples[self.selected_sample].add_time_state(uuid, zRotation, vector, acceleration)
 
 
 class Data:
@@ -106,8 +88,8 @@ class Data:
         self.uuid_dict[str(uuid)] = (DataLayers.sample, sample)
         return sample
 
-    def add_time_state(self, uuid, sample, rotation, acceleration, timestamp):
-        time_state = sample.add_time_state(uuid, rotation, acceleration, timestamp)
+    def add_time_state(self, uuid, sample, zRotation, vector, acceleration):
+        time_state = sample.add_time_state(uuid, zRotation, vector, acceleration)
         self.uuid_dict[str(uuid)] = (DataLayers.time_state, time_state)
         return time_state
 
@@ -118,12 +100,6 @@ class Data:
     def delete_time_state(self, time_state):
         self.uuid_dict[str(time_state)][1].parent.time_states.remove(self.uuid_dict[str(time_state)][1])
         del self.uuid_dict[str(time_state)]
-
-    def add_rotation(self, tuple):
-        self.gestures[self.selected_gesture].add_rotation(tuple)
-
-    def add_acceleration(self, tuple):
-        self.gestures[self.selected_gesture].add_acceleration(tuple)
 
     def get_gesture_sorted(self):
         return sorted(self.gestures, key=operator.itemgetter("name"))

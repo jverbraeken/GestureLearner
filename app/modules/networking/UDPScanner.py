@@ -12,9 +12,6 @@ def register(service_locator):
     service_locator.udp_scanner = UDPScanner(service_locator)
 
 
-
-
-
 class UDPScanner:
     service_locator = None
     thread_listen = None

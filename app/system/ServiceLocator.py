@@ -4,7 +4,6 @@ from app.modules.data import Data
 from app.modules.filesystem import GRTWriter, GRTReader
 from app.modules.logging import Loggers, LoggerFactory
 from app.modules.networking import UDPScanner, ByteStreamInterpreter
-from app.modules.framing import Framer
 
 
 class ServiceLocator:
@@ -15,7 +14,6 @@ class ServiceLocator:
     udp_scanner = None
     byte_stream_interpreter = None
     data = None
-    framer = None
 
     def __init__(self):
         self.init()
@@ -29,7 +27,6 @@ class ServiceLocator:
         self.register_udp_scanner()
         self.register_byte_stream_interpreter()
         self.register_data()
-        self.register_framer()
 
     def register_logging_factories(self):
         LoggerFactory.register(self)
@@ -54,6 +51,3 @@ class ServiceLocator:
 
     def register_data(self):
         Data.register(self)
-
-    def register_framer(self):
-        Framer.register(self)

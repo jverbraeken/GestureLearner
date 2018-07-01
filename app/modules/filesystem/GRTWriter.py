@@ -50,24 +50,15 @@ class GRTWriter:
                 if self.write_raw:
                     self.file.write("SampleName: " + sample.name.replace("\n", "") + "\n")
                 self.file.write("TimeSeriesLength: " + str(len(sample.time_states)) + "\n")
-                self.file.write("Duration: " + str(sample.time_states[-1].timestamp - sample.time_states[0].timestamp) + "\n")
                 self.file.write("TimeSeriesData:\n")
-                if self.write_raw:
-                    for time_state in sample.time_states:
-                        self.file.write(
-                            str((round(time_state.rotation[0] * 100), round(time_state.rotation[1] * 100), round(time_state.rotation[2] * 100)))[1:-1].replace(",", "")
-                            + " "
-                            + str((round(time_state.acceleration[0] * 100), round(time_state.acceleration[1] * 100), round(time_state.acceleration[2] * 100)))[1:-1].replace(",", "")
-                            + " "
-                            + str(time_state.timestamp)
-                            + "\n")
-                else:
-                    for time_state in sample.time_states:
-                        self.file.write(
-                            str((round(time_state.rotation[0] * 100), round(time_state.rotation[1] * 100), round(time_state.rotation[2] * 100)))[1:-1].replace(",", "")
-                            + " "
-                            + str((round(time_state.acceleration[0] * 100), round(time_state.acceleration[1] * 100), round(time_state.acceleration[2] * 100)))[1:-1].replace(",", "")
-                            + "\n")
+                for time_state in sample.time_states:
+                    self.file.write(
+                        str(round(time_state.zRotation * 100))
+                        + " "
+                        + str((round(time_state.vector[0] * 100), round(time_state.vector[1] * 100), round(time_state.vector[2] * 100)))[1:-1].replace(",", "")
+                        + " "
+                        + str((round(time_state.acceleration[0] * 100), round(time_state.acceleration[1] * 100), round(time_state.acceleration[2] * 100)))[1:-1].replace(",", "")
+                        + "\n")
 
     def write_grtraw(self, file_path):
         """
@@ -95,29 +86,4 @@ class GRTWriter:
         self.write_raw = False
         self.write_header()
         self.write_body()
-        self.file.close()
-
-    def write_uwf(self, file_path, captures):
-        """
-        Writes the contents of the uwf captures to the file specified
-
-        Args:
-            self.file_path (str): The full path to the file to which the contents should be written
-        """
-        gestures = self.service_locator.data.gestures
-
-        self.file = open(file_path, "w")
-        self.file.write(str(len(captures)) + "\n")
-        for gesture in range(len(captures)):
-            self.file.write(str(len(captures[gesture])) + "\n")
-            self.file.write(gestures[gesture].name + "\n")
-            for dimension in captures[gesture]:
-                self.file.write(str(len(dimension)) + "\n")
-                for capture in dimension:
-                    self.file.write("CAPTURE\n")
-                    self.file.write(str(capture.start_time) + "\n")
-                    self.file.write(str(capture.end_time) + "\n")
-                    self.file.write(str(capture.start_value) + "\n")
-                    self.file.write(str(capture.end_value) + "\n")
-                    self.file.write(str(capture.state) + "\n")
         self.file.close()

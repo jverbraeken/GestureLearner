@@ -23,20 +23,18 @@ class ByteStreamInterpreter:
     def interpret_data(self, byte_string):
         (request,) = unpack_from('!B', byte_string, 0)
         if request == self.COMTP_SENSOR_DATA:
-            (vx,) = unpack_from('!f', byte_string, 1)
-            (vy,) = unpack_from('!f', byte_string, 5)
-            (vz,) = unpack_from('!f', byte_string, 9)
-            # (rx,) = unpack_from('!f', byte_string, 13)
-            # (ry,) = unpack_from('!f', byte_string, 17)
-            # (rz,) = unpack_from('!f', byte_string, 21)
-            (rtime,) = unpack_from('!q', byte_string, 25)
-            (ax,) = unpack_from('!f', byte_string, 33)
-            (ay,) = unpack_from('!f', byte_string, 37)
-            (az,) = unpack_from('!f', byte_string, 41)
+            (zrot,) = unpack_from('!f', byte_string, 1)
+            (vx,) = unpack_from('!f', byte_string, 5)
+            (vy,) = unpack_from('!f', byte_string, 9)
+            (vz,) = unpack_from('!f', byte_string, 13)
+            (ax,) = unpack_from('!f', byte_string, 17)
+            (ay,) = unpack_from('!f', byte_string, 21)
+            (az,) = unpack_from('!f', byte_string, 25)
             self.logger.user_input(
-                "interpreted rotation: vx = " + str(vx) + ", vy = " + str(vy) + ", vz = " + str(vz) + ", rtime = " + str(rtime)
+                "interpreted rotation: zrot = " + str(zrot)
+                + ", vx = " + str(vx) + ", vy = " + str(vy) + ", vz = " + str(vz)
                 + ", ax = " + str(ax) + ", ay = " + str(ay) + ", az = " + str(az))
-            return (vx, vy, vz), (ax, ay, az), (rtime)
+            return zrot, (vx, vy, vz), (ax, ay, az)
         elif request == self.COMTP_SHAKING_STARTED:
             return -1
         elif request == self.COMTP_SHAKING_STOPED:
